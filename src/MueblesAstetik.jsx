@@ -722,6 +722,70 @@ const CSS = `
   }
   .btn-ml:active { transform: translateY(0); box-shadow: 0 2px 0 #c8b400; }
 
+  /* ── LIGHTBOX ── */
+  .lightbox-backdrop {
+    position: fixed; inset: 0; z-index: 1000;
+    background: rgba(8,6,3,0.96);
+    display: flex; align-items: center; justify-content: center;
+    padding: 24px;
+    animation: lbFadeIn 0.25s ease;
+  }
+  @keyframes lbFadeIn { from { opacity: 0; } to { opacity: 1; } }
+  .lightbox-inner {
+    position: relative; max-width: 90vw; max-height: 90vh;
+    display: flex; flex-direction: column; align-items: center; gap: 20px;
+    animation: lbScaleIn 0.3s cubic-bezier(.22,1,.36,1);
+  }
+  @keyframes lbScaleIn { from { transform: scale(0.92); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+  .lightbox-img {
+    max-width: 88vw; max-height: 78vh;
+    object-fit: contain; border-radius: 2px;
+    box-shadow: 0 32px 80px rgba(0,0,0,0.7);
+  }
+  .lightbox-info {
+    text-align: center;
+  }
+  .lightbox-cat {
+    font-family: "Jost", sans-serif; font-size: 10px; letter-spacing: 3px;
+    text-transform: uppercase; color: #d4b87a; font-weight: 400; margin-bottom: 4px;
+  }
+  .lightbox-name {
+    font-family: "Playfair Display", serif; font-size: 1.2rem;
+    color: rgba(248,246,242,0.9); font-weight: 400;
+  }
+  .lightbox-close {
+    display: flex; align-items: center; justify-content: center;
+    width: 52px; height: 52px; border-radius: 50%;
+    background: rgba(248,246,242,0.1); border: 1px solid rgba(248,246,242,0.2);
+    color: #fff; cursor: pointer; font-size: 22px; line-height: 1;
+    transition: background 0.2s, transform 0.2s;
+    margin-top: 4px;
+  }
+  .lightbox-close:hover { background: rgba(248,246,242,0.2); transform: rotate(90deg); }
+  .lightbox-nav {
+    position: absolute; top: 50%; transform: translateY(-50%);
+    display: flex; align-items: center; justify-content: center;
+    width: 44px; height: 44px; border-radius: 50%;
+    background: rgba(248,246,242,0.1); border: 1px solid rgba(248,246,242,0.15);
+    color: #fff; cursor: pointer; font-size: 18px;
+    transition: background 0.2s;
+  }
+  .lightbox-nav:hover { background: rgba(248,246,242,0.22); }
+  .lightbox-nav.prev { left: -60px; }
+  .lightbox-nav.next { right: -60px; }
+  /* tap area outside closes */
+  .lightbox-backdrop > *:first-child { pointer-events: none; position: absolute; inset: 0; }
+
+  /* mobile touch hint on cards */
+  .prod-touch-hint {
+    display: none;
+    position: absolute; bottom: 12px; right: 12px; z-index: 2;
+    background: rgba(0,0,0,0.55); backdrop-filter: blur(4px);
+    border-radius: 50%; width: 32px; height: 32px;
+    align-items: center; justify-content: center;
+    color: rgba(255,255,255,0.8); font-size: 14px;
+  }
+
   /* RESPONSIVE */
   @media (max-width: 1024px) {
     .section { padding: 100px 48px; }
@@ -732,38 +796,127 @@ const CSS = `
     .trust-bar { padding: 20px 32px; gap: 0; }
     .trust-bar-item { padding: 0 24px; }
   }
+
+  /* ── TABLET ── */
   @media (max-width: 768px) {
     .nav-links { display: none; }
     .nav-cta { display: none; }
     .hamburger { display: flex; }
-    .astetik-nav { padding: 0 24px; }
-    .mob-menu { padding: 36px 24px; }
-    .section { padding: 80px 24px; }
-    .contact-section { padding: 96px 24px; }
-    footer { padding: 36px 24px; flex-direction: column; align-items: flex-start; }
-    .products-header { grid-template-columns: 1fr; gap: 28px; }
-    .beds-header { grid-template-columns: 1fr; gap: 28px; }
-    .prod-grid { grid-template-columns: 1fr 1fr; }
-    .beds-grid { grid-template-columns: 1fr 1fr; }
-    .custom-grid { grid-template-columns: 1fr; gap: 56px; }
+    .astetik-nav { padding: 0 20px; height: 72px; top: 34px; }
+    .mob-menu { top: calc(72px + 34px); padding: 32px 20px; gap: 28px; }
+    .section { padding: 72px 20px; }
+    .contact-section { padding: 80px 20px; }
+    footer { padding: 32px 20px; flex-direction: column; align-items: flex-start; gap: 20px; }
+
+    /* Hero */
+    .hero-content { padding: 0 20px; margin-top: -32px; }
+    .hero-title { font-size: clamp(2.6rem, 9vw, 4rem); letter-spacing: -0.5px; }
+    .hero-sub { font-size: 10px; letter-spacing: 2px; }
+    .hero-ctas { flex-direction: column; align-items: center; gap: 12px; margin-top: 36px; }
+    .btn-wa, .btn-ghost { width: 100%; max-width: 320px; justify-content: center; padding: 17px 24px; }
+    .hero-rule { height: 32px; margin: 20px auto 0; }
+
+    /* Trust bar — horizontal scroll */
+    .trust-bar {
+      flex-wrap: nowrap; overflow-x: auto; justify-content: flex-start;
+      gap: 0; padding: 16px 20px;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+    .trust-bar::-webkit-scrollbar { display: none; }
+    .trust-bar-item { border-right: 1px solid rgba(255,255,255,0.07); padding: 0 20px; flex-shrink: 0; }
+
+    /* Products — 2 columns, good proportions */
+    .products-header { grid-template-columns: 1fr; gap: 20px; margin-bottom: 40px; }
+    .prod-grid { grid-template-columns: 1fr 1fr; gap: 2px; }
+    .prod-card { aspect-ratio: 3/4; }
+    /* Show touch hint on mobile instead of hover overlay */
+    .prod-touch-hint { display: flex; }
+    .prod-overlay { opacity: 1; background: linear-gradient(to top, rgba(12,10,6,0.75) 0%, transparent 55%); }
+    .prod-cat { transform: translateY(0); font-size: 8px; }
+    .prod-name { transform: translateY(0); font-size: 1rem; }
+    .prod-hint { display: none; }
+
+    /* Customisation */
+    .custom-grid { grid-template-columns: 1fr; gap: 40px; }
+    .variant-frame { aspect-ratio: 4/3; max-width: 100%; }
+    .swatches { gap: 12px; }
+    .sw-ring { width: 44px; height: 44px; }
+
+    /* Beds */
+    .beds-header { grid-template-columns: 1fr; gap: 20px; margin-bottom: 40px; }
+    .beds-grid { grid-template-columns: 1fr 1fr; gap: 20px; }
+    .bed-img-wrap { aspect-ratio: 3/4; }
+
+    /* Stats */
     .stats-grid { grid-template-columns: 1fr 1fr; }
-    .trust-grid { grid-template-columns: 1fr 1fr; }
-    .trust-bar { flex-wrap: wrap; gap: 12px; padding: 20px 24px; }
-    .trust-bar-item { border-right: none; padding: 8px 16px; }
-    .proof-cta-row { flex-direction: column; align-items: flex-start; padding: 32px; }
-    .float-wa-label { display: none; }
-    .float-wa:hover .float-wa-label { max-width: 0; padding-right: 0; }
-    .contact-reassure { gap: 16px; }
-  }
-  @media (max-width: 520px) {
-    .urgency-bar { font-size: 9.5px; letter-spacing: 1.2px; padding: 8px 12px; gap: 8px; }
-    .prod-grid { grid-template-columns: 1fr 1fr; }
-    .beds-grid { grid-template-columns: 1fr; }
-    .hero-ctas { flex-direction: column; align-items: center; }
-    .stats-grid { grid-template-columns: 1fr 1fr; }
-    .trust-grid { grid-template-columns: 1fr 1fr; }
     .stat-cell { padding: 36px 16px; }
+    .stat-num { font-size: 2.8rem; }
+    .trust-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+    .trust-card { padding: 28px 12px; }
+
+    /* Proof CTA */
+    .proof-cta-row { flex-direction: column; align-items: flex-start; padding: 28px 24px; gap: 20px; }
+    .proof-cta-heading { font-size: 1.4rem; }
+
+    /* Contact */
+    .contact-wa-card { padding: 28px 20px; }
+    .contact-reassure { gap: 14px; }
+    .contact-reassure-item { font-size: 9px; }
+
+    /* Lightbox nav arrows hide on mobile — swipe instead */
+    .lightbox-nav { display: none; }
+    .lightbox-img { max-width: 95vw; max-height: 72vh; }
+
+    /* Float button smaller */
     .float-wa-icon { width: 52px; height: 52px; }
+    .float-wa { bottom: 20px; right: 20px; }
+
+    /* Footer */
+    .f-links { flex-direction: column; gap: 16px; }
+  }
+
+  /* ── MOBILE ── */
+  @media (max-width: 480px) {
+    .urgency-bar { font-size: 9px; letter-spacing: 1px; padding: 8px 12px; gap: 8px; }
+    .hero-title { font-size: clamp(2.4rem, 10vw, 3.2rem); }
+    .hero-eyebrow { margin-bottom: 28px; }
+    .eyebrow-text { font-size: 9px; letter-spacing: 3px; }
+
+    /* Products: 2 cols tight */
+    .prod-grid { grid-template-columns: 1fr 1fr; gap: 2px; }
+    .prod-name { font-size: 0.9rem; }
+
+    /* Single col beds on very small screens */
+    .beds-grid { grid-template-columns: 1fr; gap: 24px; }
+    .bed-img-wrap { aspect-ratio: 4/3; }
+
+    /* Stats single col */
+    .stats-grid { grid-template-columns: 1fr 1fr; }
+    .stat-num { font-size: 2.4rem; }
+
+    /* Trust grid 2 col */
+    .trust-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+    .trust-card { padding: 24px 10px; }
+    .trust-icon { font-size: 1.5rem; margin-bottom: 10px; }
+    .trust-title { font-size: 9px; letter-spacing: 1.5px; }
+
+    /* Section headings smaller */
+    .section-heading { font-size: clamp(1.8rem, 7vw, 2.6rem); }
+
+    /* Proof CTA stack */
+    .proof-cta-row { padding: 24px 20px; }
+    .btn-wa, .btn-gold, .btn-ml { font-size: 10px; padding: 16px 20px; }
+
+    /* Lightbox */
+    .lightbox-close { width: 44px; height: 44px; font-size: 18px; }
+
+    /* Float WA */
+    .float-wa-icon { width: 48px; height: 48px; }
+    .float-wa { bottom: 16px; right: 16px; }
+
+    /* Footer compact */
+    .f-copy { font-size: 9px; }
   }
 `;
 
@@ -778,7 +931,30 @@ export default function MueblesAstetik() {
   const scrollY = useScrollY();
   const [activeVariant, setActiveVariant] = useState(VARIANTS[0]);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [lightbox, setLightbox] = useState(null); // { index, items }
   const navSolid = scrollY > 80;
+
+  const openLightbox = (items, index) => setLightbox({ items, index });
+  const closeLightbox = () => setLightbox(null);
+  const lbPrev = () => setLightbox(lb => ({ ...lb, index: (lb.index - 1 + lb.items.length) % lb.items.length }));
+  const lbNext = () => setLightbox(lb => ({ ...lb, index: (lb.index + 1) % lb.items.length }));
+
+  // ESC to close lightbox
+  useEffect(() => {
+    const onKey = (e) => { if (e.key === "Escape") closeLightbox(); };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
+
+  // Swipe support for lightbox
+  const touchStart = useRef(null);
+  const onTouchStart = (e) => { touchStart.current = e.touches[0].clientX; };
+  const onTouchEnd = (e) => {
+    if (!touchStart.current) return;
+    const diff = touchStart.current - e.changedTouches[0].clientX;
+    if (Math.abs(diff) > 50) diff > 0 ? lbNext() : lbPrev();
+    touchStart.current = null;
+  };
 
   const scrollTo = (id) => {
     setMenuOpen(false);
@@ -789,8 +965,28 @@ export default function MueblesAstetik() {
     <div style={{ fontFamily: "'Playfair Display', Georgia, serif", background: "#f8f6f2", color: "#18160f", overflowX: "hidden" }}>
       <style>{CSS}</style>
 
+      {/* LIGHTBOX */}
+      {lightbox && (
+        <div className="lightbox-backdrop" onClick={closeLightbox} onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
+          <div className="lightbox-inner" onClick={e => e.stopPropagation()}>
+            <button className="lightbox-nav prev" onClick={lbPrev}>&#8249;</button>
+            <img
+              className="lightbox-img"
+              src={lightbox.items[lightbox.index].img}
+              alt={lightbox.items[lightbox.index].name}
+            />
+            <button className="lightbox-nav next" onClick={lbNext}>&#8250;</button>
+            <div className="lightbox-info">
+              <p className="lightbox-cat">{lightbox.items[lightbox.index].cat}</p>
+              <p className="lightbox-name">{lightbox.items[lightbox.index].name}</p>
+            </div>
+            <button className="lightbox-close" onClick={closeLightbox}>✕</button>
+          </div>
+        </div>
+      )}
+
       {/* URGENCY BAR */}
-      <a href="https://wa.me/5491135710615" target="_blank" rel="noopener noreferrer" className="urgency-bar">
+      <a href="https://wa.me/5491135710615?text=Hola%21+Vi+su+p%C3%A1gina+web+y+me+gustar%C3%ADa+recibir+m%C3%A1s+informaci%C3%B3n+sobre+sus+muebles+%F0%9F%98%8A" target="_blank" rel="noopener noreferrer" className="urgency-bar">
         <span className="urgency-dot" />
         <span>Respondemos en menos de 1 hora · Consultá sin compromiso</span>
         <span style={{ color: "#a8f0c0", fontSize: 13 }}>→</span>
@@ -808,7 +1004,7 @@ export default function MueblesAstetik() {
           ))}
         </ul>
         <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-          <a href="https://wa.me/5491135710615" target="_blank" rel="noopener noreferrer" className="nav-cta">
+          <a href="https://wa.me/5491135710615?text=Hola%21+Vi+su+p%C3%A1gina+web+y+me+gustar%C3%ADa+recibir+m%C3%A1s+informaci%C3%B3n+sobre+sus+muebles+%F0%9F%98%8A" target="_blank" rel="noopener noreferrer" className="nav-cta">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
               <path d={WA_PATH1}/><path d={WA_PATH2}/>
             </svg>
@@ -844,7 +1040,7 @@ export default function MueblesAstetik() {
             Diseño a medida <span>·</span> Calidad premium <span>·</span> Terminaciones artesanales
           </p>
           <div className="hero-ctas">
-            <a href="https://wa.me/5491135710615" target="_blank" rel="noopener noreferrer" className="btn-wa">
+            <a href="https://wa.me/5491135710615?text=Hola%21+Vi+su+p%C3%A1gina+web+y+me+gustar%C3%ADa+recibir+m%C3%A1s+informaci%C3%B3n+sobre+sus+muebles+%F0%9F%98%8A" target="_blank" rel="noopener noreferrer" className="btn-wa">
               <svg width="19" height="19" viewBox="0 0 24 24" fill="currentColor">
                 <path d={WA_PATH1}/><path d={WA_PATH2}/>
               </svg>
@@ -906,8 +1102,8 @@ export default function MueblesAstetik() {
           </div>
           <Fade delay={0.1}>
             <div className="prod-grid">
-              {PRODUCTS.map(p => (
-                <div className="prod-card" key={p.id}>
+              {PRODUCTS.map((p, i) => (
+                <div className="prod-card" key={p.id} onClick={() => openLightbox(PRODUCTS, i)}>
                   <img src={p.img} alt={p.name} loading="lazy" />
                   <div className="prod-overlay">
                     <p className="prod-cat">{p.cat}</p>
@@ -917,6 +1113,7 @@ export default function MueblesAstetik() {
                       Consultar disponibilidad
                     </div>
                   </div>
+                  <div className="prod-touch-hint">🔍</div>
                 </div>
               ))}
             </div>
@@ -961,7 +1158,7 @@ export default function MueblesAstetik() {
                   ))}
                 </div>
                 <div style={{ marginTop: 52 }}>
-                  <a href="https://wa.me/5491135710615" target="_blank" rel="noopener noreferrer" className="btn-gold">
+                  <a href="https://wa.me/5491135710615?text=Hola%21+Vi+su+p%C3%A1gina+web+y+me+gustar%C3%ADa+recibir+m%C3%A1s+informaci%C3%B3n+sobre+sus+muebles+%F0%9F%98%8A" target="_blank" rel="noopener noreferrer" className="btn-gold">
                     Consultar personalización
                   </a>
                 </div>
@@ -993,10 +1190,11 @@ export default function MueblesAstetik() {
           <div className="beds-grid">
             {BEDS.map((b, i) => (
               <Fade key={b.id} delay={i * 0.12}>
-                <div className="bed-card">
+                <div className="bed-card" onClick={() => openLightbox(BEDS, i)}>
                   <div className="bed-img-wrap">
                     <img src={b.img} alt={b.name} loading="lazy" />
                     <div className="bed-overlay-num">0{i + 1}</div>
+                    <div className="prod-touch-hint">🔍</div>
                   </div>
                   <div className="bed-info">
                     <p className="bed-index">0{i + 1} — Artesanal</p>
@@ -1063,7 +1261,7 @@ export default function MueblesAstetik() {
                 <p className="proof-cta-sub">Sin compromiso · Respuesta en menos de 1 hora</p>
               </div>
               <div style={{ display: "flex", gap: 14, flexWrap: "wrap", alignItems: "center" }}>
-                <a href="https://wa.me/5491135710615" target="_blank" rel="noopener noreferrer" className="btn-wa">
+                <a href="https://wa.me/5491135710615?text=Hola%21+Vi+su+p%C3%A1gina+web+y+me+gustar%C3%ADa+recibir+m%C3%A1s+informaci%C3%B3n+sobre+sus+muebles+%F0%9F%98%8A" target="_blank" rel="noopener noreferrer" className="btn-wa">
                   <svg width="19" height="19" viewBox="0 0 24 24" fill="currentColor">
                     <path d={WA_PATH1}/><path d={WA_PATH2}/>
                   </svg>
@@ -1095,7 +1293,7 @@ export default function MueblesAstetik() {
 
             <div className="contact-wa-card">
               <span className="contact-wa-label">📲 Canal principal de contacto</span>
-              <a href="https://wa.me/5491135710615" target="_blank" rel="noopener noreferrer" className="btn-wa" style={{ fontSize: 12, letterSpacing: "2.5px", padding: "22px 48px" }}>
+              <a href="https://wa.me/5491135710615?text=Hola%21+Vi+su+p%C3%A1gina+web+y+me+gustar%C3%ADa+recibir+m%C3%A1s+informaci%C3%B3n+sobre+sus+muebles+%F0%9F%98%8A" target="_blank" rel="noopener noreferrer" className="btn-wa" style={{ fontSize: 12, letterSpacing: "2.5px", padding: "22px 48px" }}>
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
                   <path d={WA_PATH1}/><path d={WA_PATH2}/>
                 </svg>
@@ -1140,7 +1338,7 @@ export default function MueblesAstetik() {
           <span className="f-name">Muebles Astetik</span>
         </div>
         <div className="f-links">
-          <a href="https://wa.me/5491135710615" target="_blank" rel="noopener noreferrer">
+          <a href="https://wa.me/5491135710615?text=Hola%21+Vi+su+p%C3%A1gina+web+y+me+gustar%C3%ADa+recibir+m%C3%A1s+informaci%C3%B3n+sobre+sus+muebles+%F0%9F%98%8A" target="_blank" rel="noopener noreferrer">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
               <path d={WA_PATH1}/><path d={WA_PATH2}/>
             </svg>
@@ -1163,7 +1361,7 @@ export default function MueblesAstetik() {
       </footer>
 
       {/* FLOATING WA BUTTON */}
-      <a href="https://wa.me/5491135710615" target="_blank" rel="noopener noreferrer" className="float-wa">
+      <a href="https://wa.me/5491135710615?text=Hola%21+Vi+su+p%C3%A1gina+web+y+me+gustar%C3%ADa+recibir+m%C3%A1s+informaci%C3%B3n+sobre+sus+muebles+%F0%9F%98%8A" target="_blank" rel="noopener noreferrer" className="float-wa">
         <div className="float-wa-icon">
           <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
             <path d={WA_PATH1}/><path d={WA_PATH2}/>
