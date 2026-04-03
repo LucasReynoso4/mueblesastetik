@@ -738,9 +738,10 @@ const CSS = `
   }
   @keyframes lbScaleIn { from { transform: scale(0.92); opacity: 0; } to { transform: scale(1); opacity: 1; } }
   .lightbox-img {
-    max-width: 88vw; max-height: 78vh;
+    max-width: 80vw; max-height: 72vh;
     object-fit: contain; border-radius: 2px;
     box-shadow: 0 32px 80px rgba(0,0,0,0.7);
+    display: block;
   }
   .lightbox-info {
     text-align: center;
@@ -763,18 +764,18 @@ const CSS = `
   }
   .lightbox-close:hover { background: rgba(248,246,242,0.2); transform: rotate(90deg); }
   .lightbox-nav {
-    position: absolute; top: 50%; transform: translateY(-50%);
+    position: fixed;
+    top: 50%; transform: translateY(-50%);
     display: flex; align-items: center; justify-content: center;
-    width: 44px; height: 44px; border-radius: 50%;
-    background: rgba(248,246,242,0.1); border: 1px solid rgba(248,246,242,0.15);
-    color: #fff; cursor: pointer; font-size: 18px;
-    transition: background 0.2s;
+    width: 52px; height: 52px; border-radius: 50%;
+    background: rgba(248,246,242,0.12); border: 1px solid rgba(248,246,242,0.2);
+    color: #fff; cursor: pointer; font-size: 24px;
+    transition: background 0.2s, transform 0.2s;
+    z-index: 1001;
   }
-  .lightbox-nav:hover { background: rgba(248,246,242,0.22); }
-  .lightbox-nav.prev { left: -60px; }
-  .lightbox-nav.next { right: -60px; }
-  /* tap area outside closes */
-  .lightbox-backdrop > *:first-child { pointer-events: none; position: absolute; inset: 0; }
+  .lightbox-nav:hover { background: rgba(248,246,242,0.25); transform: translateY(-50%) scale(1.08); }
+  .lightbox-nav.prev { left: 24px; }
+  .lightbox-nav.next { right: 24px; }
 
   /* mobile touch hint on cards */
   .prod-touch-hint {
@@ -826,10 +827,11 @@ const CSS = `
     .trust-bar::-webkit-scrollbar { display: none; }
     .trust-bar-item { border-right: 1px solid rgba(255,255,255,0.07); padding: 0 20px; flex-shrink: 0; }
 
-    /* Products — 2 columns, good proportions */
+    /* Products — 2 cols, last odd card full-width */
     .products-header { grid-template-columns: 1fr; gap: 20px; margin-bottom: 40px; }
     .prod-grid { grid-template-columns: 1fr 1fr; gap: 2px; }
     .prod-card { aspect-ratio: 3/4; }
+    .prod-card:last-child:nth-child(odd) { grid-column: 1 / -1; aspect-ratio: 16/9; }
     /* Show touch hint on mobile instead of hover overlay */
     .prod-touch-hint { display: flex; }
     .prod-overlay { opacity: 1; background: linear-gradient(to top, rgba(12,10,6,0.75) 0%, transparent 55%); }
@@ -864,9 +866,11 @@ const CSS = `
     .contact-reassure { gap: 14px; }
     .contact-reassure-item { font-size: 9px; }
 
-    /* Lightbox nav arrows hide on mobile — swipe instead */
+    /* Lightbox centered on mobile */
     .lightbox-nav { display: none; }
-    .lightbox-img { max-width: 95vw; max-height: 72vh; }
+    .lightbox-img { max-width: 92vw; max-height: 62vh; }
+    .lightbox-inner { max-width: 100%; }
+    .lightbox-backdrop { padding: 20px 12px; }
 
     /* Float button smaller */
     .float-wa-icon { width: 52px; height: 52px; }
