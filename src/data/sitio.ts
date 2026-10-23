@@ -14,6 +14,10 @@ export const SITIO = {
   ubicacion: 'Buenos Aires, Argentina',
 };
 
+// Descuento por comprar directo (transferencia o efectivo) sobre el precio de Mercado Libre.
+// 0.15 = 15% menos, con el envío a cargo del comprador (ML se queda con 14% a 44% según envío gratis y cuotas). Con 0 se muestra solo el precio de Mercado Libre.
+export const DESCUENTO_DIRECTO = 0.15;
+
 // Cifras que se muestran en la página. Revisar que sigan siendo ciertas.
 export const CIFRAS = [
   { valor: '+1000', etiqueta: 'Ventas en Mercado Libre' },

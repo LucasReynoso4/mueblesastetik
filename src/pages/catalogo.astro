@@ -29,7 +29,7 @@ const listado = {
       </p>
     </div>
 
-    <div id="filtros" class="sticky top-[5.25rem] z-30 mt-8 rounded-[var(--radius-tarjeta)] bg-white/90 p-2 ring-1 ring-linea/70 backdrop-blur-xl">
+    <div id="filtros" class="sticky top-[4.75rem] z-30 -mx-3 mt-8 border-b border-linea bg-papel px-3 py-2 md:top-[4.75rem] md:mx-0 md:rounded-[var(--radius-tarjeta)] md:border-0 md:bg-white/90 md:p-2 md:ring-1 md:ring-linea/70 md:backdrop-blur-xl">
       <div class="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
         <div class="carrusel !gap-1.5" role="group" aria-label="Filtrar por categoría">
           <button type="button" data-filtro="categoria" data-valor="" class="chip" aria-pressed="true">Todos</button>
@@ -39,7 +39,7 @@ const listado = {
         </div>
         <label class="flex items-center gap-2 px-2 text-sm text-humo md:px-0">
           <span class="shrink-0">Para</span>
-          <select data-filtro-uso class="min-h-11 w-full rounded-full bg-papel px-4 text-[15px] text-tinta md:w-auto">
+          <select data-filtro-uso class="min-h-10 w-full md:min-h-11 rounded-full bg-white ring-1 ring-linea md:bg-papel md:ring-0 px-4 text-[15px] text-tinta md:w-auto">
             <option value="">Cualquier uso</option>
             {USOS.map((u) => <option value={u.id}>{u.nombre}</option>)}
           </select>
