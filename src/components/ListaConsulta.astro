@@ -6,34 +6,34 @@ import { SITIO } from '../data/sitio';
   id="lista-consulta"
   data-numero={SITIO.whatsapp}
   aria-labelledby="lista-titulo"
-  class="m-0 ml-auto h-dvh max-h-dvh w-full max-w-md bg-crema p-0 text-tinta backdrop:bg-noche/60 backdrop:backdrop-blur-sm"
+  class="m-0 mt-auto h-[85dvh] max-h-[85dvh] w-full max-w-none rounded-t-[var(--radius-tarjeta)] bg-nube p-0 text-tinta backdrop:bg-tinta/50 backdrop:backdrop-blur-sm md:my-3 md:mr-3 md:ml-auto md:h-[calc(100dvh-1.5rem)] md:max-h-none md:max-w-md md:rounded-[var(--radius-tarjeta)]"
 >
   <div class="flex h-full flex-col">
     <div class="flex items-center justify-between border-b border-linea px-6 py-5">
-      <h2 id="lista-titulo" class="font-serif text-2xl">Tu lista de consulta</h2>
-      <button type="button" data-cerrar-lista class="grid size-10 place-items-center rounded-full hover:bg-linea" aria-label="Cerrar">
+      <h2 id="lista-titulo" class="text-2xl font-semibold tracking-tight">Tu lista</h2>
+      <button type="button" data-cerrar-lista class="grid size-11 place-items-center rounded-full bg-papel hover:bg-linea" aria-label="Cerrar">
         <Icono nombre="cerrar" />
       </button>
     </div>
 
     <div class="flex-1 overflow-y-auto px-6 py-4">
-      <p data-lista-vacia class="py-10 text-center text-sm leading-relaxed text-tinta/60">
+      <p data-lista-vacia class="py-10 text-center leading-relaxed text-humo">
         Todavía no agregaste nada.<br />Sumá los muebles que te gustan con la tela y el color que quieras y mandanos todo junto por WhatsApp.
       </p>
-      <ul data-lista-items class="divide-y divide-linea"></ul>
+      <ul data-lista-items class="space-y-2"></ul>
     </div>
 
     <div data-lista-acciones class="hidden border-t border-linea px-6 py-5">
       <a data-lista-enviar href="#" target="_blank" rel="noopener" class="btn-wa w-full">
         <Icono nombre="whatsapp" class="size-4" /> Enviar consulta por WhatsApp
       </a>
-      <button type="button" data-lista-vaciar class="mt-3 w-full py-2 text-xs uppercase tracking-[0.2em] text-tinta/50 hover:text-tinta">Vaciar lista</button>
+      <button type="button" data-lista-vaciar class="mt-2 min-h-11 w-full text-sm text-humo underline-offset-4 hover:text-tinta hover:underline">Vaciar lista</button>
     </div>
   </div>
 </dialog>
 
-<div data-aviso-lista role="status" aria-live="polite" class="pointer-events-none fixed inset-x-0 bottom-24 z-50 flex justify-center px-4 opacity-0 transition-opacity duration-300">
-  <p class="flex items-center gap-2 bg-noche px-5 py-3 text-sm text-crema shadow-lg"><Icono nombre="check" class="size-4 text-oro" /> <span data-aviso-texto>Agregado a tu lista</span></p>
+<div data-aviso-lista role="status" aria-live="polite" class="pointer-events-none fixed inset-x-0 bottom-24 z-[60] flex justify-center px-4 opacity-0 transition-opacity duration-300">
+  <p class="flex items-center gap-2 rounded-full bg-tinta px-5 py-3 text-sm text-white shadow-lg"><Icono nombre="check" class="size-4 text-oro" /> <span data-aviso-texto>Agregado a tu lista</span></p>
 </div>
 
 <script>
@@ -57,22 +57,22 @@ import { SITIO } from '../data/sitio';
     ul.replaceChildren(
       ...items.map((item, i) => {
         const li = document.createElement('li');
-        li.className = 'flex items-start justify-between gap-4 py-4';
+        li.className = 'flex items-center justify-between gap-4 rounded-2xl bg-white px-4 py-3.5';
         const texto = document.createElement('div');
         const nombre = document.createElement('a');
         nombre.href = `/productos/${item.slug}`;
-        nombre.className = 'font-serif text-lg hover:underline';
+        nombre.className = 'font-semibold tracking-tight hover:underline';
         nombre.textContent = item.nombre;
         texto.append(nombre);
         if (item.color) {
           const color = document.createElement('p');
-          color.className = 'mt-0.5 text-xs uppercase tracking-[0.15em] text-tinta/55';
+          color.className = 'mt-0.5 text-sm text-humo first-letter:uppercase';
           color.textContent = item.color;
           texto.append(color);
         }
         const quitar = document.createElement('button');
         quitar.type = 'button';
-        quitar.className = 'shrink-0 text-xs text-tinta/50 underline hover:text-tinta';
+        quitar.className = 'min-h-11 shrink-0 px-2 text-sm text-humo underline underline-offset-4 hover:text-tinta';
         quitar.textContent = 'Quitar';
         quitar.addEventListener('click', () => quitarDeLista(i));
         li.append(texto, quitar);
@@ -110,6 +110,11 @@ import { SITIO } from '../data/sitio';
     animation: entrar 0.35s var(--ease-suave);
   }
   @keyframes entrar {
-    from { transform: translateX(100%); }
+    from { transform: translateY(100%); }
+  }
+  @media (min-width: 768px) {
+    @keyframes entrar {
+      from { transform: translateX(110%); }
+    }
   }
 </style>

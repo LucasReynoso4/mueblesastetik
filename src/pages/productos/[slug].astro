@@ -50,7 +50,7 @@ const jsonLd = [
 ];
 ---
 <Base titulo={p.nombre} descripcion={`${p.resumen} Fabricado a medida en más de 30 colores. Envíos a todo el país.`} imagen={og.src} jsonLd={jsonLd}>
-  <nav aria-label="Ruta" class="mx-auto max-w-7xl px-5 pt-6 text-xs uppercase tracking-[0.15em] text-tinta/50 md:px-8">
+  <nav aria-label="Ruta" class="mx-auto max-w-7xl px-5 pt-6 text-sm text-humo md:px-7">
     <ol class="flex flex-wrap items-center gap-2">
       <li><a href="/catalogo" class="hover:text-tinta">Catálogo</a></li>
       <li aria-hidden="true">/</li>
@@ -58,9 +58,9 @@ const jsonLd = [
     </ol>
   </nav>
 
-  <article class="mx-auto grid max-w-7xl gap-10 px-5 pt-6 pb-20 md:grid-cols-2 md:gap-16 md:px-8 md:pb-28" data-ficha data-nombre={p.nombre}>
-    <div class="md:sticky md:top-28 md:self-start">
-      <div class="relative overflow-hidden bg-linea">
+  <article class="mx-auto grid max-w-7xl gap-3 px-3 pt-4 pb-16 md:grid-cols-2 md:px-5 md:pb-24" data-ficha data-nombre={p.nombre}>
+    <div class="md:sticky md:top-24 md:self-start">
+      <div class="tarjeta relative">
         <Picture
           src={p.imagenes[0]}
           alt={`${p.nombre} en ${eleccionInicial}`}
@@ -71,103 +71,106 @@ const jsonLd = [
           fetchpriority="high"
           class="aspect-[4/5] w-full object-cover"
         />
-        <p class="absolute bottom-4 left-4 bg-noche/75 px-4 py-2 text-[10px] uppercase tracking-[0.2em] text-oro-claro backdrop-blur">
-          En la foto: {telaInicial.nombre} {colorInicial.nombre.toLowerCase()}
+        <p class="etiqueta absolute bottom-4 left-4">
+          <span class="size-3 rounded-full ring-1 ring-tinta/10" style={`background:${colorInicial.hex}`}></span>
+          En la foto: {telaInicial.nombre.toLowerCase()} {colorInicial.nombre.toLowerCase()}
         </p>
       </div>
       {p.imagenes.length > 1 && (
         <div class="mt-3 grid grid-cols-4 gap-3">
           {p.imagenes.slice(1).map((img) => (
-            <Picture src={img} alt={p.nombre} formats={['webp']} widths={[240]} sizes="25vw" class="aspect-square w-full object-cover" />
+            <Picture src={img} alt={p.nombre} formats={['webp']} widths={[240]} sizes="25vw" class="aspect-square w-full rounded-2xl object-cover" />
           ))}
         </div>
       )}
     </div>
 
-    <div>
-      <p class="antetitulo">{nombreCategoria(p.categoria)}</p>
-      <h1 class="mt-4 font-serif text-4xl leading-tight md:text-5xl">{p.nombre}</h1>
-      <p class="mt-5 text-lg leading-relaxed text-tinta/70">{p.descripcion}</p>
+    <div class="rounded-[var(--radius-tarjeta)] bg-white p-6 md:p-10">
+      <span class="etiqueta !bg-papel">{nombreCategoria(p.categoria)}</span>
+      <h1 class="mt-4 text-4xl leading-[1] font-semibold tracking-[-0.035em] md:text-5xl">{p.nombre}</h1>
+      <p class="mt-4 text-lg leading-relaxed text-humo">{p.descripcion}</p>
 
       <ul class="mt-5 flex flex-wrap gap-2">
         {p.usos.map((u) => (
-          <li><a href={`/catalogo?uso=${u}`} class="inline-block border border-linea px-3 py-1.5 text-[11px] uppercase tracking-[0.15em] text-tinta/60 hover:border-oro">{nombreUso(u)}</a></li>
+          <li><a href={`/catalogo?uso=${u}`} class="inline-flex min-h-9 items-center rounded-full bg-papel px-3.5 text-sm hover:bg-linea">{nombreUso(u)}</a></li>
         ))}
       </ul>
 
-      <div class="mt-10 border-t border-linea pt-8" data-selector>
+      <div class="mt-8 rounded-3xl bg-papel p-5 md:p-6" data-selector>
         <fieldset>
-          <legend class="text-xs uppercase tracking-[0.2em] text-tinta/60">1. Elegí la tela</legend>
-          <div class="mt-4 flex flex-wrap gap-2">
+          <legend class="font-semibold">1. Elegí la tela</legend>
+          <div class="mt-3 flex flex-wrap gap-2">
             {telas.map((t) => (
               <label class="cursor-pointer">
                 <input type="radio" name="tela" value={t.id} data-nombre={t.nombre} checked={t.id === telaInicial.id} class="peer sr-only" />
-                <span class="block border border-linea bg-white px-5 py-2.5 text-sm transition peer-checked:border-noche peer-checked:bg-noche peer-checked:text-crema peer-focus-visible:ring-2 peer-focus-visible:ring-oro">{t.nombre}</span>
+                <span class="flex min-h-11 items-center rounded-full bg-white px-5 text-[15px] ring-1 ring-linea transition peer-checked:bg-tinta peer-checked:text-white peer-checked:ring-tinta peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-acento">{t.nombre}</span>
               </label>
             ))}
           </div>
           {telas.map((t) => (
-            <p data-descripcion-tela={t.id} hidden={t.id !== telaInicial.id} class="mt-3 text-sm text-tinta/55">{t.descripcion}</p>
+            <p data-descripcion-tela={t.id} hidden={t.id !== telaInicial.id} class="mt-3 text-sm leading-relaxed text-humo">{t.descripcion}</p>
           ))}
         </fieldset>
 
-        <fieldset class="mt-8">
-          <legend class="flex w-full items-baseline justify-between text-xs uppercase tracking-[0.2em] text-tinta/60">
+        <fieldset class="mt-6">
+          <legend class="flex w-full items-baseline justify-between gap-4 font-semibold">
             <span>2. Elegí el color</span>
-            <span class="font-serif text-lg tracking-normal normal-case text-tinta" data-color-nombre>{colorInicial.nombre}</span>
+            <span class="font-serif text-xl font-normal text-acento italic" data-color-nombre>{colorInicial.nombre}</span>
           </legend>
           {telas.map((t) => (
-            <div data-colores-tela={t.id} hidden={t.id !== telaInicial.id} class="mt-4 flex flex-wrap gap-3">
+            <div data-colores-tela={t.id} hidden={t.id !== telaInicial.id} class="mt-3 flex flex-wrap gap-2">
               {t.colores.map((c) => (
                 <label class="cursor-pointer" title={c.nombre}>
                   <input type="radio" name={`color-${t.id}`} value={c.nombre} checked={t.id === telaInicial.id ? c.id === colorInicial.id : c === t.colores[0]} class="peer sr-only" />
-                  <span class="block size-11 rounded-full border-2 border-transparent p-0.5 transition peer-checked:border-oro peer-focus-visible:ring-2 peer-focus-visible:ring-oro">
-                    <span class="block size-full rounded-full border border-tinta/10" style={`background:${c.hex}`}></span>
+                  <span class="block size-12 rounded-full p-1 ring-2 ring-transparent transition peer-checked:ring-tinta peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-acento">
+                    <span class="block size-full rounded-full ring-1 ring-tinta/10" style={`background:${c.hex}`}></span>
                   </span>
                   <span class="sr-only">{c.nombre}</span>
                 </label>
               ))}
             </div>
           ))}
-          <p class="mt-5 text-sm text-tinta/55">
-            ¿Buscás otro tono? Tenemos más de 30. <a href="/colores" class="underline underline-offset-4 hover:text-oro">Ver muestrario</a>
+          <p class="mt-4 text-sm text-humo">
+            ¿Buscás otro tono? Tenemos más de 30. <a href="/colores" class="font-medium text-tinta underline underline-offset-4 hover:text-acento">Ver todos</a>
           </p>
         </fieldset>
       </div>
 
-      <div class="mt-10 flex flex-col gap-3">
-        <a data-wa-producto href={linkWhatsApp(mensaje(eleccionInicial))} target="_blank" rel="noopener" class="btn-wa w-full">
+      <div class="mt-6 flex flex-col gap-2.5">
+        <a data-wa-producto href={linkWhatsApp(mensaje(eleccionInicial))} target="_blank" rel="noopener" class="btn-wa w-full !min-h-14 !text-base">
           <Icono nombre="whatsapp" class="size-5" /> Consultar precio por WhatsApp
         </a>
-        <button type="button" data-agregar data-slug={p.slug} data-nombre={p.nombre} data-color={eleccionInicial} class="btn-borde w-full">
-          <Icono nombre="mas" class="size-4" /> Agregar a mi lista
-        </button>
-        <a href={p.mercadolibre ?? SITIO.mercadolibre} target="_blank" rel="noopener" class="btn-ml w-full">
-          {p.mercadolibre ? 'Comprar en Mercado Libre' : 'Ver tienda en Mercado Libre'}
-        </a>
+        <div class="grid grid-cols-2 gap-2.5">
+          <button type="button" data-agregar data-slug={p.slug} data-nombre={p.nombre} data-color={eleccionInicial} class="btn-claro">
+            <Icono nombre="mas" class="size-4" /> A mi lista
+          </button>
+          <a href={p.mercadolibre ?? SITIO.mercadolibre} target="_blank" rel="noopener" class="btn-ml">
+            {p.mercadolibre ? 'Mercado Libre' : 'Ver en ML'}
+          </a>
+        </div>
       </div>
 
-      <div class="mt-12 border-t border-linea pt-8">
-        <h2 class="text-xs uppercase tracking-[0.2em] text-tinta/60">Detalles</h2>
-        <ul class="mt-4 space-y-3">
+      <div class="mt-8 border-t border-linea pt-6">
+        <h2 class="font-semibold">Detalles</h2>
+        <ul class="mt-3 space-y-2.5">
           {p.detalles.map((d) => (
-            <li class="flex gap-3 text-tinta/75"><Icono nombre="check" class="mt-0.5 size-4 shrink-0 text-oro" /> {d}</li>
+            <li class="flex gap-3 text-humo"><Icono nombre="check" class="mt-0.5 size-5 shrink-0 text-acento" /> {d}</li>
           ))}
         </ul>
       </div>
 
-      <div class="mt-10 grid grid-cols-3 gap-3 border-t border-linea pt-8 text-center">
-        <div><Icono nombre="regla" class="mx-auto size-6 text-oro" /><p class="mt-2 text-[11px] uppercase tracking-[0.12em] text-tinta/60">A medida</p></div>
-        <div><Icono nombre="camion" class="mx-auto size-6 text-oro" /><p class="mt-2 text-[11px] uppercase tracking-[0.12em] text-tinta/60">Envíos al país</p></div>
-        <div><Icono nombre="estrella" class="mx-auto size-6 text-oro" /><p class="mt-2 text-[11px] uppercase tracking-[0.12em] text-tinta/60">Fabricación propia</p></div>
-      </div>
+      <ul class="mt-8 grid grid-cols-3 gap-2 text-center text-sm">
+        <li class="rounded-2xl bg-papel px-2 py-4"><Icono nombre="regla" class="mx-auto size-6 text-acento" /><p class="mt-2">A medida</p></li>
+        <li class="rounded-2xl bg-papel px-2 py-4"><Icono nombre="camion" class="mx-auto size-6 text-acento" /><p class="mt-2">Envíos al país</p></li>
+        <li class="rounded-2xl bg-papel px-2 py-4"><Icono nombre="estrella" class="mx-auto size-6 text-acento" /><p class="mt-2">Fabricación propia</p></li>
+      </ul>
     </div>
   </article>
 
-  <section class="border-t border-linea bg-marfil">
-    <div class="mx-auto max-w-7xl px-5 py-20 md:px-8">
-      <h2 class="titulo !text-3xl md:!text-4xl">También te puede <em>gustar</em></h2>
-      <div class="mt-10 grid grid-cols-2 gap-x-3 gap-y-10 sm:gap-x-6 lg:grid-cols-3">
+  <section class="mx-auto max-w-7xl px-3 pb-12 md:px-5">
+    <div class="rounded-[var(--radius-tarjeta)] bg-nube px-4 py-14 md:px-10">
+      <h2 class="titulo px-1 !text-4xl md:!text-5xl">También te puede <em>gustar</em></h2>
+      <div class="mt-8 grid grid-cols-2 gap-x-3 gap-y-8 md:gap-x-5 lg:grid-cols-3">
         {relacionados.map((o) => <ProductoCard producto={o} />)}
       </div>
     </div>

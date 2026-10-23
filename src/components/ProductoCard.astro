@@ -2,12 +2,16 @@
 import { Picture } from 'astro:assets';
 import type { Producto } from '../data/productos';
 import { nombreCategoria } from '../data/productos';
+import { TELAS } from '../data/colores';
 
 interface Props {
   producto: Producto;
   prioridad?: boolean;
 }
 const { producto: p, prioridad = false } = Astro.props;
+const colores = TELAS.filter((t) => !p.telas || p.telas.includes(t.id)).flatMap((t) => t.colores);
+const muestra = colores.slice(0, 5);
+const resto = colores.length - muestra.length;
 ---
 <article
   class="group relative"
@@ -15,22 +19,25 @@ const { producto: p, prioridad = false } = Astro.props;
   data-categoria={p.categoria}
   data-usos={p.usos.join(' ')}
 >
-  <div class="relative aspect-[4/5] overflow-hidden bg-linea">
+  <div class="tarjeta relative aspect-[4/5]">
     <Picture
       src={p.imagenes[0]}
       alt={p.nombre}
       formats={['avif', 'webp']}
       widths={[320, 480, 600]}
-      sizes="(min-width: 1024px) 33vw, 50vw"
+      sizes="(min-width: 1024px) 30vw, 50vw"
       loading={prioridad ? 'eager' : 'lazy'}
-      class="size-full object-cover transition-transform duration-[1.2s] ease-suave group-hover:scale-105"
+      class="size-full object-cover transition-transform duration-700 ease-suave group-hover:scale-[1.04]"
     />
+    <span class="etiqueta absolute top-3 left-3 !px-3 !py-1 !text-xs">{nombreCategoria(p.categoria)}</span>
   </div>
-  <div class="pt-4">
-    <p class="text-[10px] uppercase tracking-[0.25em] text-oro">{nombreCategoria(p.categoria)}</p>
-    <h3 class="mt-1 font-serif text-lg leading-snug sm:text-xl">
+  <div class="px-1 pt-3">
+    <h3 class="text-[17px] leading-tight font-semibold tracking-tight sm:text-lg">
       <a href={`/productos/${p.slug}`} class="after:absolute after:inset-0">{p.nombre}</a>
     </h3>
-    <p class="mt-1.5 hidden text-sm leading-relaxed text-tinta/60 sm:block">{p.resumen}</p>
+    <div class="mt-2 flex items-center gap-1" aria-label={`${colores.length} colores disponibles`}>
+      {muestra.map((c) => <span class="size-3.5 rounded-full ring-1 ring-tinta/10" style={`background:${c.hex}`}></span>)}
+      {resto > 0 && <span class="ml-1 text-xs text-humo">+{resto}</span>}
+    </div>
   </div>
 </article>

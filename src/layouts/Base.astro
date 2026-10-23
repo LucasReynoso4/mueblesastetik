@@ -11,11 +11,9 @@ interface Props {
   descripcion?: string;
   imagen?: string;
   jsonLd?: Record<string, unknown>[];
-  /** Header transparente sobre una foto (solo la portada) */
-  headerSobreFoto?: boolean;
 }
 
-const { titulo, descripcion = SITIO.descripcion, imagen = '/og.jpg', jsonLd = [], headerSobreFoto = false } = Astro.props;
+const { titulo, descripcion = SITIO.descripcion, imagen = '/og.jpg', jsonLd = [] } = Astro.props;
 const tituloCompleto = titulo ? `${titulo} | ${SITIO.nombre}` : `${SITIO.nombre} · Muebles tapizados a medida`;
 const canonical = new URL(Astro.url.pathname.replace(/\.html$/, ''), Astro.site);
 const imagenAbs = new URL(imagen, Astro.site).href;
@@ -43,7 +41,7 @@ const negocio = {
     <title>{tituloCompleto}</title>
     <meta name="description" content={descripcion} />
     <link rel="canonical" href={canonical} />
-    <meta name="theme-color" content="#131109" />
+    <meta name="theme-color" content="#f4f0ea" />
 
     <link rel="icon" href="/favicon.ico" sizes="48x48" />
     <link rel="icon" href="/icon-192.png" type="image/png" />
@@ -63,8 +61,8 @@ const negocio = {
     <script type="application/ld+json" set:html={JSON.stringify([negocio, ...jsonLd])} />
   </head>
   <body class="min-h-dvh overflow-x-clip">
-    <a href="#contenido" class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[999] focus:bg-white focus:px-4 focus:py-2">Saltar al contenido</a>
-    <Header sobreFoto={headerSobreFoto} />
+    <a href="#contenido" class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[999] focus:rounded-full focus:bg-white focus:px-4 focus:py-2">Saltar al contenido</a>
+    <Header />
     <main id="contenido">
       <slot />
     </main>

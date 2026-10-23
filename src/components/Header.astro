@@ -4,106 +4,73 @@ import logo from '../assets/logo.jpg';
 import Icono from './Icono.astro';
 import { linkWhatsApp, MENSAJE_GENERAL } from '../data/sitio';
 
-interface Props {
-  sobreFoto?: boolean;
-}
-const { sobreFoto = false } = Astro.props;
-
 const LINKS = [
   { href: '/catalogo', texto: 'Catálogo' },
   { href: '/estetica', texto: 'Para tu salón' },
-  { href: '/colores', texto: 'Colores' },
+  { href: '/colores', texto: 'Telas y colores' },
   { href: '/como-comprar', texto: 'Cómo comprar' },
 ];
 const actual = Astro.url.pathname.replace(/\.html$/, '');
 ---
-<header
-  id="header"
-  data-sobre-foto={sobreFoto ? '' : undefined}
-  class="group fixed inset-x-0 top-0 z-50 transition-colors duration-500"
->
-  <div class="mx-auto flex h-18 max-w-7xl items-center justify-between gap-4 px-5 md:h-20 md:px-8">
-    <a href="/" class="flex items-center gap-3" aria-label="Muebles Astetik, inicio">
-      <Image src={logo} alt="" width={44} height={44} class="size-10 rounded-full border border-oro/40 object-cover md:size-11" loading="eager" />
-      <span class="text-[11px] font-medium uppercase tracking-[0.35em] transition-colors">Muebles Astetik</span>
+<header id="header" class="sticky top-0 z-50 px-3 pt-3 md:px-5">
+  <div class="mx-auto flex h-16 max-w-7xl items-center justify-between gap-3 rounded-full bg-white/85 pr-2 pl-2 shadow-[0_1px_0_rgba(21,19,18,0.06),0_8px_24px_-12px_rgba(21,19,18,0.15)] ring-1 ring-linea/70 backdrop-blur-xl">
+    <a href="/" class="flex items-center gap-2.5 rounded-full pr-3" aria-label="Muebles Astetik, inicio">
+      <Image src={logo} alt="" width={48} height={48} class="size-12 rounded-full object-cover" loading="eager" />
+      <span class="text-[17px] font-semibold tracking-tight">Astetik</span>
     </a>
 
     <nav aria-label="Principal" class="hidden lg:block">
-      <ul class="flex items-center gap-9">
+      <ul class="flex items-center gap-1">
         {LINKS.map((l) => (
           <li>
             <a
               href={l.href}
               aria-current={actual === l.href ? 'page' : undefined}
-              class="relative py-1 text-[11px] uppercase tracking-[0.25em] opacity-75 transition hover:opacity-100 aria-[current=page]:opacity-100 after:absolute after:inset-x-0 after:-bottom-0.5 after:h-px after:origin-left after:scale-x-0 after:bg-oro after:transition-transform hover:after:scale-x-100 aria-[current=page]:after:scale-x-100"
+              class="rounded-full px-4 py-2 text-[15px] text-humo transition hover:bg-papel hover:text-tinta aria-[current=page]:bg-tinta aria-[current=page]:text-white"
             >{l.texto}</a>
           </li>
         ))}
       </ul>
     </nav>
 
-    <div class="flex items-center gap-2 md:gap-3">
+    <div class="flex items-center gap-1.5">
       <button
         type="button"
         data-abrir-lista
-        class="relative grid size-11 place-items-center rounded-full transition hover:bg-current/10"
+        class="relative grid size-12 place-items-center rounded-full transition hover:bg-papel"
         aria-label="Ver mi lista de consulta"
       >
-        <Icono nombre="lista" class="size-5" />
-        <span data-contador-lista class="absolute top-1 right-1 hidden min-w-4.5 rounded-full bg-oro px-1 text-center text-[10px] leading-4.5 font-medium text-white">0</span>
+        <Icono nombre="lista" class="size-[22px]" />
+        <span data-contador-lista class="absolute top-1.5 right-1.5 hidden min-w-5 rounded-full bg-oro px-1 text-center text-[11px] leading-5 font-semibold text-tinta">0</span>
       </button>
-      <a href={linkWhatsApp(MENSAJE_GENERAL)} target="_blank" rel="noopener" class="btn-wa hidden px-5 py-3 md:inline-flex">
-        <Icono nombre="whatsapp" class="size-4" /> WhatsApp
+      <a href={linkWhatsApp(MENSAJE_GENERAL)} target="_blank" rel="noopener" class="btn-wa hidden md:inline-flex">
+        <Icono nombre="whatsapp" class="size-4" /> Consultar
       </a>
-      <button type="button" data-menu-boton aria-expanded="false" aria-controls="menu-movil" class="grid size-11 place-items-center lg:hidden" aria-label="Abrir menú">
+      <button type="button" data-menu-boton aria-expanded="false" aria-controls="menu-movil" class="grid size-12 place-items-center rounded-full hover:bg-papel lg:hidden" aria-label="Abrir menú">
         <Icono nombre="menu" class="size-6" />
       </button>
     </div>
   </div>
 
-  <nav id="menu-movil" aria-label="Menú" hidden class="border-t border-linea bg-crema text-tinta lg:hidden">
-    <ul class="flex flex-col px-5 py-4">
+  <nav id="menu-movil" aria-label="Menú" hidden class="mx-auto mt-2 max-w-7xl rounded-[var(--radius-tarjeta)] bg-white p-3 shadow-xl ring-1 ring-linea lg:hidden">
+    <ul>
       {LINKS.map((l) => (
-        <li><a href={l.href} class="block py-3.5 font-serif text-2xl">{l.texto}</a></li>
+        <li>
+          <a href={l.href} class="flex items-center justify-between rounded-2xl px-4 py-4 text-2xl font-semibold tracking-tight hover:bg-papel">
+            {l.texto} <Icono nombre="flecha" class="size-5 text-humo" />
+          </a>
+        </li>
       ))}
-      <li class="pt-4 pb-2">
-        <a href={linkWhatsApp(MENSAJE_GENERAL)} target="_blank" rel="noopener" class="btn-wa w-full">
-          <Icono nombre="whatsapp" class="size-4" /> Escribinos por WhatsApp
-        </a>
-      </li>
     </ul>
   </nav>
 </header>
-{!sobreFoto && <div class="h-18 md:h-20" aria-hidden="true"></div>}
-
-<style>
-  #header {
-    color: var(--color-tinta);
-    background: rgb(248 246 242 / 0.96);
-    backdrop-filter: blur(16px);
-    box-shadow: 0 1px 0 rgb(24 22 15 / 0.08);
-  }
-  #header[data-sobre-foto]:not(.solido):not(.abierto) {
-    color: white;
-    background: transparent;
-    backdrop-filter: none;
-    box-shadow: none;
-  }
-</style>
 
 <script>
-  const header = document.getElementById('header')!;
-  const boton = header.querySelector<HTMLButtonElement>('[data-menu-boton]')!;
+  const boton = document.querySelector<HTMLButtonElement>('[data-menu-boton]')!;
   const menu = document.getElementById('menu-movil')!;
-
-  const alScroll = () => header.classList.toggle('solido', window.scrollY > 60);
-  alScroll();
-  window.addEventListener('scroll', alScroll, { passive: true });
-
   boton.addEventListener('click', () => {
     const abrir = menu.hidden;
     menu.hidden = !abrir;
     boton.setAttribute('aria-expanded', String(abrir));
-    header.classList.toggle('abierto', abrir);
   });
 </script>
