@@ -14,6 +14,10 @@ export const SITIO = {
   ubicacion: 'Buenos Aires, Argentina',
 };
 
+// Descuento por comprar directo (transferencia o efectivo) sobre el precio de Mercado Libre.
+// 0.10 = 10% menos. Con 0 se muestra solo el precio de Mercado Libre.
+export const DESCUENTO_DIRECTO = 0.1;
+
 // Cifras que se muestran en la página. Revisar que sigan siendo ciertas.
 export const CIFRAS = [
   { valor: '+1000', etiqueta: 'Ventas en Mercado Libre' },

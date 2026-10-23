@@ -1,7 +1,8 @@
 ---
 import { Picture } from 'astro:assets';
 import type { Producto } from '../data/productos';
-import { formatoPrecio, nombreCategoria, precioDesde } from '../data/productos';
+import { formatoPrecio, nombreCategoria, precioDesde, precioDirecto } from '../data/productos';
+import { DESCUENTO_DIRECTO } from '../data/sitio';
 import { TELAS } from '../data/colores';
 
 interface Props {
@@ -41,7 +42,8 @@ const resto = colores.length - muestra.length;
       {resto > 0 && <span class="ml-1 text-xs text-humo">+{resto}</span>}
     </div>
     <p class="mt-2 text-sm">
-      {p.opciones.length > 1 && <span class="text-humo">Desde </span>}<span class="font-semibold">{formatoPrecio(precioDesde(p))}</span>
+      <span class="block">{p.opciones.length > 1 && <span class="text-humo">Desde </span>}<span class="font-semibold">{formatoPrecio(precioDirecto(precioDesde(p)))}</span></span>
+      {DESCUENTO_DIRECTO > 0 && <s class="block text-xs text-humo" aria-label="Precio en Mercado Libre">{formatoPrecio(precioDesde(p))}</s>}
     </p>
   </div>
 </article>

@@ -3,9 +3,9 @@ import { Picture, getImage } from 'astro:assets';
 import Base from '../../layouts/Base.astro';
 import ProductoCard from '../../components/ProductoCard.astro';
 import Icono from '../../components/Icono.astro';
-import { PRODUCTOS, formatoPrecio, nombreCategoria, nombreUso, type Foto, type Producto } from '../../data/productos';
+import { PRODUCTOS, formatoPrecio, precioDirecto, nombreCategoria, nombreUso, type Foto, type Producto } from '../../data/productos';
 import { TELAS, colorDe, telaPorId } from '../../data/colores';
-import { SITIO, linkWhatsApp } from '../../data/sitio';
+import { DESCUENTO_DIRECTO, SITIO, linkWhatsApp } from '../../data/sitio';
 
 export function getStaticPaths() {
   return PRODUCTOS.map((producto) => ({ params: { slug: producto.slug }, props: { producto } }));
@@ -39,7 +39,7 @@ const relacionados = PRODUCTOS.filter((o) => o.slug !== p.slug)
   .map(({ o }) => o);
 
 const og = await getImage({ src: portada.imagen, width: 600, format: 'jpg' });
-const precios = p.opciones.map((o) => o.precio);
+const precios = p.opciones.map((o) => precioDirecto(o.precio));
 
 const jsonLd = [
   {
@@ -123,8 +123,21 @@ let paso = 0;
     <div class="entrada rounded-[var(--radius-tarjeta)] bg-white p-6 md:p-10" style="--d:1">
       <span class="etiqueta !bg-papel">{nombreCategoria(p.categoria)}</span>
       <h1 class="mt-4 text-4xl leading-[1] font-semibold tracking-[-0.035em] md:text-5xl">{p.nombre}</h1>
-      <p class="mt-4 text-3xl font-semibold tracking-tight" data-precio>{formatoPrecio(opcionInicial.precio)}</p>
-      <p class="mt-1 text-sm text-humo">Precio publicado en Mercado Libre. Consultanos por pago directo y envío.</p>
+      {DESCUENTO_DIRECTO > 0 ? (
+        <>
+          <p class="mt-4 flex flex-wrap items-baseline gap-x-3 gap-y-1">
+            <span class="text-3xl font-semibold tracking-tight" data-precio>{formatoPrecio(precioDirecto(opcionInicial.precio))}</span>
+            <s class="text-lg text-humo" data-precio-ml aria-label="Precio en Mercado Libre">{formatoPrecio(opcionInicial.precio)}</s>
+            <span class="rounded-full bg-acento/15 px-2.5 py-0.5 text-sm font-semibold text-tinta">{Math.round(DESCUENTO_DIRECTO * 100)}% menos que en Mercado Libre</span>
+          </p>
+          <p class="mt-1 text-sm text-humo">Comprando directo por WhatsApp, con transferencia o efectivo. El precio tachado es el de Mercado Libre.</p>
+        </>
+      ) : (
+        <>
+          <p class="mt-4 text-3xl font-semibold tracking-tight" data-precio>{formatoPrecio(opcionInicial.precio)}</p>
+          <p class="mt-1 text-sm text-humo">Precio publicado en Mercado Libre. Consultanos por pago directo y envío.</p>
+        </>
+      )}
       <p class="mt-4 text-lg leading-relaxed text-humo">{p.descripcion}</p>
 
       <ul class="mt-5 flex flex-wrap gap-2">
@@ -140,10 +153,10 @@ let paso = 0;
             <div class="mt-3 flex flex-wrap gap-2">
               {p.opciones.map((o, i) => (
                 <label class="cursor-pointer">
-                  <input type="radio" name="opcion" value={o.nombre} data-precio={formatoPrecio(o.precio)} data-ml={o.mercadolibre} checked={i === 0} class="peer sr-only" />
+                  <input type="radio" name="opcion" value={o.nombre} data-precio={formatoPrecio(precioDirecto(o.precio))} data-precio-ml={formatoPrecio(o.precio)} data-ml={o.mercadolibre} checked={i === 0} class="peer sr-only" />
                   <span class="flex min-h-11 items-center gap-1.5 rounded-full bg-white px-4 text-[15px] ring-1 ring-linea transition peer-checked:bg-tinta peer-checked:text-white peer-checked:ring-tinta peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-acento">
                     {o.nombre}
-                    <span class="text-sm opacity-60">{formatoPrecio(o.precio)}</span>
+                    <span class="text-sm opacity-60">{formatoPrecio(precioDirecto(o.precio))}</span>
                   </span>
                 </label>
               ))}
@@ -251,6 +264,7 @@ let paso = 0;
   const agregar = ficha.querySelector<HTMLButtonElement>('[data-agregar]')!;
   const etiqueta = ficha.querySelector<HTMLElement>('[data-color-nombre]')!;
   const precio = ficha.querySelector<HTMLElement>('[data-precio]')!;
+  const precioMl = ficha.querySelector<HTMLElement>('[data-precio-ml]');
   const fotos = [...ficha.querySelectorAll<HTMLImageElement>('img[data-foto]')];
   const miniaturas = [...ficha.querySelectorAll<HTMLButtonElement>('[data-miniatura]')];
   const etiquetaFoto = ficha.querySelector<HTMLElement>('[data-etiqueta-foto]')!;
@@ -275,6 +289,7 @@ let paso = 0;
 
     if (opcion) {
       precio.textContent = opcion.dataset.precio!;
+      if (precioMl) precioMl.textContent = opcion.dataset.precioMl!;
       ml.href = opcion.dataset.ml!;
     }
 

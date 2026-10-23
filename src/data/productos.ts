@@ -7,6 +7,7 @@
 // Precios y links tomados de Mercado Libre el 23/10/2026.
 
 import type { ImageMetadata } from 'astro';
+import { DESCUENTO_DIRECTO } from './sitio';
 
 const archivos = import.meta.glob<{ default: ImageMetadata }>('../assets/productos/**/*.{jpg,jpeg,png,webp}', { eager: true });
 
@@ -629,4 +630,7 @@ export const nombreUso = (id: UsoId) => USOS.find((u) => u.id === id)?.nombre ??
 export const precioDesde = (p: Producto) => Math.min(...p.opciones.map((o) => o.precio));
 
 const formato = new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 });
+// Precio comprando directo: el de Mercado Libre menos el descuento, redondeado a mil.
+export const precioDirecto = (precio: number) => Math.round((precio * (1 - DESCUENTO_DIRECTO)) / 1000) * 1000;
+
 export const formatoPrecio = (precio: number) => formato.format(precio);
