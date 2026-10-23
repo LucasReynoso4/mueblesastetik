@@ -1,0 +1,49 @@
+---
+import Base from '../layouts/Base.astro';
+import Cta from '../components/Cta.astro';
+import Icono from '../components/Icono.astro';
+import { TELAS } from '../data/colores';
+import { linkWhatsApp } from '../data/sitio';
+
+---
+<Base titulo="Colores y telas" descripcion="Muestrario de telas y colores. Todos nuestros muebles se fabrican en el color que elijas.">
+  <section class="mx-auto max-w-7xl px-5 pt-12 pb-20 md:px-8 md:pt-20">
+    <p class="antetitulo">Muestrario</p>
+    <h1 class="titulo mt-4">Colores <em>y telas</em></h1>
+    <p class="mt-5 max-w-2xl leading-relaxed text-tinta/65">
+      Todos los modelos se fabrican en la tela y el color que elijas. Acá tenés una selección de los más pedidos; trabajamos con más de 30, así que si buscás un tono especial, consultanos.
+    </p>
+    <p class="mt-3 text-sm text-tinta/45">Los colores en pantalla son aproximados. Si querés, te mandamos fotos de la tela real por WhatsApp.</p>
+
+    <nav class="mt-8 flex flex-wrap gap-2" aria-label="Telas">
+      {TELAS.map((t) => <a href={`#${t.id}`} class="border border-linea bg-white px-4 py-2 text-xs uppercase tracking-[0.15em] hover:border-oro">{t.nombre}</a>)}
+    </nav>
+
+    {TELAS.map((t) => (
+      <div id={t.id} class="mt-16 scroll-mt-28">
+        <div class="flex flex-col gap-2 border-b border-linea pb-4 md:flex-row md:items-end md:justify-between">
+          <h2 class="font-serif text-3xl">{t.nombre}</h2>
+          <p class="max-w-md text-sm text-tinta/60">{t.descripcion}</p>
+        </div>
+        <ul class="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
+          {t.colores.map((c) => (
+            <li class="reveal group border border-linea bg-white p-3">
+              <div class="aspect-square w-full" style={`background:${c.hex}`}></div>
+              <div class="mt-3 flex items-center justify-between gap-2">
+                <p class="font-serif text-lg leading-tight">{c.nombre}</p>
+                <a
+                  href={linkWhatsApp(`¡Hola! Quiero ver la muestra del color ${c.nombre} en ${t.nombre.toLowerCase()}.`)}
+                  target="_blank"
+                  rel="noopener"
+                  class="grid size-8 shrink-0 place-items-center rounded-full text-wa hover:bg-wa/10"
+                  aria-label={`Pedir muestra de ${c.nombre} por WhatsApp`}
+                ><Icono nombre="whatsapp" class="size-4" /></a>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </div>
+    ))}
+  </section>
+  <Cta titulo="¿No ves tu color?" enfasis="Tenemos más de 30." texto="Escribinos y te mandamos fotos de las telas disponibles para que elijas tranquilo." mensaje="¡Hola! Quiero ver todos los colores y telas disponibles." />
+</Base>

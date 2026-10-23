@@ -1,0 +1,86 @@
+@import '@fontsource-variable/playfair-display';
+@import '@fontsource-variable/jost';
+@import 'tailwindcss';
+
+@theme {
+  --font-serif: 'Playfair Display Variable', Georgia, serif;
+  --font-sans: 'Jost Variable', system-ui, sans-serif;
+
+  --color-oro: #b89a5e;
+  --color-oro-claro: #e2c988;
+  --color-oro-oscuro: #8a6e38;
+  --color-tinta: #18160f;
+  --color-noche: #131109;
+  --color-crema: #f8f6f2;
+  --color-marfil: #fdfcf9;
+  --color-linea: #e8e2d6;
+  --color-wa: #1fbe55;
+  --color-wa-oscuro: #128c3e;
+  --color-ml: #ffe600;
+
+  --ease-suave: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-tap-highlight-color: transparent;
+  }
+  body {
+    @apply bg-crema font-sans text-tinta antialiased;
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-oro);
+    outline-offset: 3px;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+@utility antetitulo {
+  @apply flex items-center gap-4 text-[11px] font-medium uppercase tracking-[0.3em] text-oro;
+  &::before {
+    content: '';
+    @apply h-px w-8 shrink-0 bg-oro;
+  }
+}
+@utility titulo {
+  @apply font-serif text-4xl leading-[1.1] font-normal tracking-tight text-balance md:text-5xl lg:text-6xl;
+  & em {
+    @apply italic opacity-55;
+  }
+}
+@utility btn {
+  @apply inline-flex items-center justify-center gap-3 px-7 py-4 text-xs font-medium uppercase tracking-[0.12em] md:tracking-[0.2em] transition duration-300 ease-suave hover:-translate-y-0.5 active:translate-y-0 cursor-pointer;
+}
+@utility btn-wa {
+  @apply btn bg-wa text-white shadow-[0_10px_30px_-10px_rgba(31,190,85,0.7)] hover:bg-wa-oscuro;
+}
+@utility btn-oro {
+  @apply btn bg-oro text-white hover:bg-oro-oscuro;
+}
+@utility btn-ml {
+  @apply btn bg-ml text-[#2d3277] hover:brightness-95;
+}
+@utility btn-borde {
+  @apply btn border border-current;
+}
+
+/* Animación de entrada: solo se oculta si hay JS para mostrarlo */
+.js .reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.9s var(--ease-suave), transform 0.9s var(--ease-suave);
+}
+.js .reveal.visible {
+  opacity: 1;
+  transform: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .js .reveal { opacity: 1; transform: none; }
+}

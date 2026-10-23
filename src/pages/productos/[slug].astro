@@ -1,0 +1,200 @@
+---
+import { Picture, getImage } from 'astro:assets';
+import Base from '../../layouts/Base.astro';
+import ProductoCard from '../../components/ProductoCard.astro';
+import Icono from '../../components/Icono.astro';
+import { PRODUCTOS, nombreCategoria, nombreUso, type Producto } from '../../data/productos';
+import { TELAS, colorDe, telaPorId } from '../../data/colores';
+import { SITIO, linkWhatsApp } from '../../data/sitio';
+
+export function getStaticPaths() {
+  return PRODUCTOS.map((producto) => ({ params: { slug: producto.slug }, props: { producto } }));
+}
+
+const { producto: p } = Astro.props as { producto: Producto };
+const telas = TELAS.filter((t) => !p.telas || p.telas.includes(t.id));
+const telaInicial = telaPorId(p.foto.tela) ?? telas[0];
+const colorInicial = colorDe(p.foto.tela, p.foto.color) ?? telaInicial.colores[0];
+const eleccion = (tela: string, color: string) => `${tela.toLowerCase()} ${color.toLowerCase()}`;
+const eleccionInicial = eleccion(telaInicial.nombre, colorInicial.nombre);
+const mensaje = (texto: string) => `¡Hola! Vi en su página el modelo ${p.nombre} y me interesa en ${texto}. ¿Me pasan precio y demora?`;
+
+const relacionados = PRODUCTOS.filter((o) => o.slug !== p.slug)
+  .map((o) => ({ o, puntos: (o.categoria === p.categoria ? 2 : 0) + o.usos.filter((u) => p.usos.includes(u)).length }))
+  .sort((a, b) => b.puntos - a.puntos)
+  .slice(0, 3)
+  .map(({ o }) => o);
+
+const og = await getImage({ src: p.imagenes[0], width: 600, format: 'jpg' });
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name: p.nombre,
+    description: p.descripcion,
+    image: new URL(og.src, Astro.site).href,
+    category: nombreCategoria(p.categoria),
+    brand: { '@type': 'Brand', name: SITIO.nombre },
+    material: telas.map((t) => t.nombre).join(', '),
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Catálogo', item: new URL('/catalogo', Astro.site).href },
+      { '@type': 'ListItem', position: 2, name: nombreCategoria(p.categoria), item: new URL(`/catalogo?categoria=${p.categoria}`, Astro.site).href },
+      { '@type': 'ListItem', position: 3, name: p.nombre },
+    ],
+  },
+];
+---
+<Base titulo={p.nombre} descripcion={`${p.resumen} Fabricado a medida en más de 30 colores. Envíos a todo el país.`} imagen={og.src} jsonLd={jsonLd}>
+  <nav aria-label="Ruta" class="mx-auto max-w-7xl px-5 pt-6 text-xs uppercase tracking-[0.15em] text-tinta/50 md:px-8">
+    <ol class="flex flex-wrap items-center gap-2">
+      <li><a href="/catalogo" class="hover:text-tinta">Catálogo</a></li>
+      <li aria-hidden="true">/</li>
+      <li><a href={`/catalogo?categoria=${p.categoria}`} class="hover:text-tinta">{nombreCategoria(p.categoria)}</a></li>
+    </ol>
+  </nav>
+
+  <article class="mx-auto grid max-w-7xl gap-10 px-5 pt-6 pb-20 md:grid-cols-2 md:gap-16 md:px-8 md:pb-28" data-ficha data-nombre={p.nombre}>
+    <div class="md:sticky md:top-28 md:self-start">
+      <div class="relative overflow-hidden bg-linea">
+        <Picture
+          src={p.imagenes[0]}
+          alt={`${p.nombre} en ${eleccionInicial}`}
+          formats={['avif', 'webp']}
+          widths={[480, 600]}
+          sizes="(min-width: 768px) 50vw, 100vw"
+          loading="eager"
+          fetchpriority="high"
+          class="aspect-[4/5] w-full object-cover"
+        />
+        <p class="absolute bottom-4 left-4 bg-noche/75 px-4 py-2 text-[10px] uppercase tracking-[0.2em] text-oro-claro backdrop-blur">
+          En la foto: {telaInicial.nombre} {colorInicial.nombre.toLowerCase()}
+        </p>
+      </div>
+      {p.imagenes.length > 1 && (
+        <div class="mt-3 grid grid-cols-4 gap-3">
+          {p.imagenes.slice(1).map((img) => (
+            <Picture src={img} alt={p.nombre} formats={['webp']} widths={[240]} sizes="25vw" class="aspect-square w-full object-cover" />
+          ))}
+        </div>
+      )}
+    </div>
+
+    <div>
+      <p class="antetitulo">{nombreCategoria(p.categoria)}</p>
+      <h1 class="mt-4 font-serif text-4xl leading-tight md:text-5xl">{p.nombre}</h1>
+      <p class="mt-5 text-lg leading-relaxed text-tinta/70">{p.descripcion}</p>
+
+      <ul class="mt-5 flex flex-wrap gap-2">
+        {p.usos.map((u) => (
+          <li><a href={`/catalogo?uso=${u}`} class="inline-block border border-linea px-3 py-1.5 text-[11px] uppercase tracking-[0.15em] text-tinta/60 hover:border-oro">{nombreUso(u)}</a></li>
+        ))}
+      </ul>
+
+      <div class="mt-10 border-t border-linea pt-8" data-selector>
+        <fieldset>
+          <legend class="text-xs uppercase tracking-[0.2em] text-tinta/60">1. Elegí la tela</legend>
+          <div class="mt-4 flex flex-wrap gap-2">
+            {telas.map((t) => (
+              <label class="cursor-pointer">
+                <input type="radio" name="tela" value={t.id} data-nombre={t.nombre} checked={t.id === telaInicial.id} class="peer sr-only" />
+                <span class="block border border-linea bg-white px-5 py-2.5 text-sm transition peer-checked:border-noche peer-checked:bg-noche peer-checked:text-crema peer-focus-visible:ring-2 peer-focus-visible:ring-oro">{t.nombre}</span>
+              </label>
+            ))}
+          </div>
+          {telas.map((t) => (
+            <p data-descripcion-tela={t.id} hidden={t.id !== telaInicial.id} class="mt-3 text-sm text-tinta/55">{t.descripcion}</p>
+          ))}
+        </fieldset>
+
+        <fieldset class="mt-8">
+          <legend class="flex w-full items-baseline justify-between text-xs uppercase tracking-[0.2em] text-tinta/60">
+            <span>2. Elegí el color</span>
+            <span class="font-serif text-lg tracking-normal normal-case text-tinta" data-color-nombre>{colorInicial.nombre}</span>
+          </legend>
+          {telas.map((t) => (
+            <div data-colores-tela={t.id} hidden={t.id !== telaInicial.id} class="mt-4 flex flex-wrap gap-3">
+              {t.colores.map((c) => (
+                <label class="cursor-pointer" title={c.nombre}>
+                  <input type="radio" name={`color-${t.id}`} value={c.nombre} checked={t.id === telaInicial.id ? c.id === colorInicial.id : c === t.colores[0]} class="peer sr-only" />
+                  <span class="block size-11 rounded-full border-2 border-transparent p-0.5 transition peer-checked:border-oro peer-focus-visible:ring-2 peer-focus-visible:ring-oro">
+                    <span class="block size-full rounded-full border border-tinta/10" style={`background:${c.hex}`}></span>
+                  </span>
+                  <span class="sr-only">{c.nombre}</span>
+                </label>
+              ))}
+            </div>
+          ))}
+          <p class="mt-5 text-sm text-tinta/55">
+            ¿Buscás otro tono? Tenemos más de 30. <a href="/colores" class="underline underline-offset-4 hover:text-oro">Ver muestrario</a>
+          </p>
+        </fieldset>
+      </div>
+
+      <div class="mt-10 flex flex-col gap-3">
+        <a data-wa-producto href={linkWhatsApp(mensaje(eleccionInicial))} target="_blank" rel="noopener" class="btn-wa w-full">
+          <Icono nombre="whatsapp" class="size-5" /> Consultar precio por WhatsApp
+        </a>
+        <button type="button" data-agregar data-slug={p.slug} data-nombre={p.nombre} data-color={eleccionInicial} class="btn-borde w-full">
+          <Icono nombre="mas" class="size-4" /> Agregar a mi lista
+        </button>
+        <a href={p.mercadolibre ?? SITIO.mercadolibre} target="_blank" rel="noopener" class="btn-ml w-full">
+          {p.mercadolibre ? 'Comprar en Mercado Libre' : 'Ver tienda en Mercado Libre'}
+        </a>
+      </div>
+
+      <div class="mt-12 border-t border-linea pt-8">
+        <h2 class="text-xs uppercase tracking-[0.2em] text-tinta/60">Detalles</h2>
+        <ul class="mt-4 space-y-3">
+          {p.detalles.map((d) => (
+            <li class="flex gap-3 text-tinta/75"><Icono nombre="check" class="mt-0.5 size-4 shrink-0 text-oro" /> {d}</li>
+          ))}
+        </ul>
+      </div>
+
+      <div class="mt-10 grid grid-cols-3 gap-3 border-t border-linea pt-8 text-center">
+        <div><Icono nombre="regla" class="mx-auto size-6 text-oro" /><p class="mt-2 text-[11px] uppercase tracking-[0.12em] text-tinta/60">A medida</p></div>
+        <div><Icono nombre="camion" class="mx-auto size-6 text-oro" /><p class="mt-2 text-[11px] uppercase tracking-[0.12em] text-tinta/60">Envíos al país</p></div>
+        <div><Icono nombre="estrella" class="mx-auto size-6 text-oro" /><p class="mt-2 text-[11px] uppercase tracking-[0.12em] text-tinta/60">Fabricación propia</p></div>
+      </div>
+    </div>
+  </article>
+
+  <section class="border-t border-linea bg-marfil">
+    <div class="mx-auto max-w-7xl px-5 py-20 md:px-8">
+      <h2 class="titulo !text-3xl md:!text-4xl">También te puede <em>gustar</em></h2>
+      <div class="mt-10 grid grid-cols-2 gap-x-3 gap-y-10 sm:gap-x-6 lg:grid-cols-3">
+        {relacionados.map((o) => <ProductoCard producto={o} />)}
+      </div>
+    </div>
+  </section>
+</Base>
+
+<script>
+  const ficha = document.querySelector<HTMLElement>('[data-ficha]')!;
+  const selector = ficha.querySelector<HTMLElement>('[data-selector]')!;
+  const nombre = ficha.dataset.nombre!;
+  const wa = ficha.querySelector<HTMLAnchorElement>('[data-wa-producto]')!;
+  const agregar = ficha.querySelector<HTMLButtonElement>('[data-agregar]')!;
+  const etiqueta = ficha.querySelector<HTMLElement>('[data-color-nombre]')!;
+
+  function actualizar() {
+    const tela = selector.querySelector<HTMLInputElement>('input[name="tela"]:checked')!;
+    selector.querySelectorAll<HTMLElement>('[data-colores-tela]').forEach((g) => (g.hidden = g.dataset.coloresTela !== tela.value));
+    selector.querySelectorAll<HTMLElement>('[data-descripcion-tela]').forEach((d) => (d.hidden = d.dataset.descripcionTela !== tela.value));
+    const color = selector.querySelector<HTMLInputElement>(`input[name="color-${tela.value}"]:checked`)!;
+
+    const texto = `${tela.dataset.nombre!.toLowerCase()} ${color.value.toLowerCase()}`;
+    etiqueta.textContent = color.value;
+    agregar.dataset.color = texto;
+    const url = new URL(wa.href);
+    url.searchParams.set('text', `¡Hola! Vi en su página el modelo ${nombre} y me interesa en ${texto}. ¿Me pasan precio y demora?`);
+    wa.href = url.href;
+  }
+
+  selector.addEventListener('change', actualizar);
+</script>

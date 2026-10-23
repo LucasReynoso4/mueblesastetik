@@ -1,0 +1,14 @@
+---
+import Icono from './Icono.astro';
+import { linkWhatsApp, MENSAJE_GENERAL } from '../data/sitio';
+---
+<a
+  href={linkWhatsApp(MENSAJE_GENERAL)}
+  target="_blank"
+  rel="noopener"
+  aria-label="Escribinos por WhatsApp"
+  class="group fixed right-4 bottom-4 z-40 flex items-center rounded-full bg-wa text-white shadow-[0_12px_32px_-8px_rgba(31,190,85,0.8)] transition hover:-translate-y-0.5 hover:bg-wa-oscuro md:right-6 md:bottom-6"
+>
+  <span class="grid size-14 place-items-center"><Icono nombre="whatsapp" class="size-7" /></span>
+  <span class="max-w-0 overflow-hidden text-xs font-medium tracking-[0.15em] whitespace-nowrap uppercase transition-all duration-500 group-hover:max-w-40 group-hover:pr-5">Consultanos</span>
+</a>

@@ -1,0 +1,85 @@
+---
+import { Picture } from 'astro:assets';
+import Base from '../layouts/Base.astro';
+import ProductoCard from '../components/ProductoCard.astro';
+import Cta from '../components/Cta.astro';
+import Icono from '../components/Icono.astro';
+import hero from '../assets/hero.jpg';
+import { PRODUCTOS } from '../data/productos';
+import { linkWhatsApp } from '../data/sitio';
+
+const paraSalon = PRODUCTOS.filter((p) => p.usos.includes('estetica') || p.usos.includes('comercial'));
+
+const RUBROS = ['Centros de estética', 'Pestañas y cejas', 'Uñas', 'Peluquerías', 'Spa y masajes', 'Locales de ropa', 'Consultorios', 'Showrooms'];
+
+const AMBIENTES = [
+  { titulo: 'Recepción', texto: 'Un mostrador capitoné en el color de tu marca es lo primero que ven tus clientas.', slugs: ['mostrador-capitone', 'mostrador-capitone-con-puffs', 'mostrador-curvo-capitone'] },
+  { titulo: 'Sala de espera', texto: 'Sillones y puffs cómodos que además quedan perfectos en las fotos para redes.', slugs: ['sillon-labios', 'sillon-redondo-capitone', 'puff-redondo-capitone'] },
+  { titulo: 'Gabinete', texto: 'Camillas ergonómicas y banquetas para trabajar cómoda todo el día.', slugs: ['camilla-capitone', 'puff-terciopelo'] },
+];
+const MENSAJE = '¡Hola! Tengo un salón y quiero equipar la recepción/sala de espera. ¿Me pasan opciones y precios?';
+---
+<Base titulo="Equipamiento para salones de estética" descripcion="Mostradores, camillas, sillones y puffs capitoné para centros de estética, peluquerías, uñas, pestañas y locales. En el color de tu marca.">
+  <section class="relative overflow-hidden bg-noche text-crema">
+    <Picture src={hero} alt="" formats={['avif', 'webp']} widths={[640, 1024]} sizes="100vw" class="absolute inset-0 size-full object-cover opacity-35" loading="eager" />
+    <div class="relative mx-auto max-w-7xl px-5 py-24 md:px-8 md:py-36">
+      <p class="antetitulo text-oro-claro before:bg-oro-claro">Para profesionales</p>
+      <h1 class="titulo mt-5 max-w-3xl">Equipá tu salón <em>con identidad propia</em></h1>
+      <p class="mt-6 max-w-xl text-lg leading-relaxed text-crema/75">
+        Fabricamos mostradores, camillas, sillones y puffs en el color de tu marca, a la medida de tu local.
+      </p>
+      <a href={linkWhatsApp(MENSAJE)} target="_blank" rel="noopener" class="btn-wa mt-10"><Icono nombre="whatsapp" class="size-5" /> Cotizar mi salón</a>
+    </div>
+  </section>
+
+  <section class="border-b border-linea bg-marfil">
+    <ul class="mx-auto flex max-w-7xl flex-wrap justify-center gap-x-8 gap-y-3 px-5 py-8 text-xs uppercase tracking-[0.2em] text-tinta/60 md:px-8">
+      {RUBROS.map((r) => <li class="flex items-center gap-2"><span class="size-1 rounded-full bg-oro"></span>{r}</li>)}
+    </ul>
+  </section>
+
+  {AMBIENTES.map((a, i) => {
+    const productos = a.slugs.map((s) => PRODUCTOS.find((p) => p.slug === s)).filter((p) => p !== undefined);
+    return (
+      <section class:list={['px-5 py-20 md:px-8 md:py-24', i % 2 === 1 && 'bg-marfil']}>
+        <div class="mx-auto max-w-7xl">
+          <div class="reveal flex flex-col justify-between gap-4 md:flex-row md:items-end">
+            <div>
+              <p class="antetitulo">0{i + 1}</p>
+              <h2 class="titulo mt-4 !text-4xl md:!text-5xl">{a.titulo}</h2>
+            </div>
+            <p class="max-w-md text-tinta/65">{a.texto}</p>
+          </div>
+          <div class="mt-10 grid gap-x-6 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
+            {productos.map((p) => <div class="reveal"><ProductoCard producto={p} /></div>)}
+          </div>
+        </div>
+      </section>
+    );
+  })}
+
+  <section class="bg-noche px-5 py-20 text-crema md:px-8">
+    <div class="mx-auto grid max-w-7xl gap-10 md:grid-cols-3">
+      {[
+        { icono: 'tijera', t: 'El color de tu marca', d: 'Elegí entre más de 30 colores para que todo el local combine.' },
+        { icono: 'regla', t: 'A la medida de tu local', d: 'Adaptamos el mostrador y los sillones al espacio que tenés.' },
+        { icono: 'escudo', t: 'Telas resistentes', d: 'Eco-cuero fácil de limpiar para el uso de todos los días.' },
+      ].map((b) => (
+        <div class="reveal">
+          <Icono nombre={b.icono as 'tijera'} class="size-7 text-oro" />
+          <p class="mt-4 font-serif text-2xl">{b.t}</p>
+          <p class="mt-2 leading-relaxed text-crema/60">{b.d}</p>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <section class="mx-auto max-w-7xl px-5 py-20 md:px-8">
+    <h2 class="titulo !text-3xl md:!text-4xl">Todo para <em>tu local</em></h2>
+    <div class="mt-10 grid gap-x-6 gap-y-12 sm:grid-cols-2 lg:grid-cols-4">
+      {paraSalon.map((p) => <ProductoCard producto={p} />)}
+    </div>
+  </section>
+
+  <Cta titulo="Contanos cómo es tu salón" enfasis="y te armamos una propuesta." texto="Mandanos fotos o medidas del espacio y el color de tu marca. Te respondemos con opciones y presupuesto." mensaje={MENSAJE} />
+</Base>

@@ -1,0 +1,34 @@
+---
+// Bloque final de llamada a la acción, oscuro.
+import Icono from './Icono.astro';
+import { SITIO, linkWhatsApp, MENSAJE_GENERAL } from '../data/sitio';
+
+interface Props {
+  titulo?: string;
+  enfasis?: string;
+  texto?: string;
+  mensaje?: string;
+}
+const {
+  titulo = '¿Tenés una idea en mente?',
+  enfasis = 'La hacemos realidad.',
+  texto = 'Contanos qué mueble buscás, el color y las medidas. Te respondemos con el presupuesto sin compromiso.',
+  mensaje = MENSAJE_GENERAL,
+} = Astro.props;
+---
+<section class="bg-noche px-5 py-24 text-center text-crema md:py-32">
+  <div class="reveal mx-auto max-w-2xl">
+    <p class="antetitulo justify-center">Contacto</p>
+    <h2 class="titulo mt-5">{titulo}<br /><em>{enfasis}</em></h2>
+    <p class="mx-auto mt-6 max-w-lg leading-relaxed text-crema/60">{texto}</p>
+    <div class="mt-10 flex flex-wrap justify-center gap-3">
+      <a href={linkWhatsApp(mensaje)} target="_blank" rel="noopener" class="btn-wa">
+        <Icono nombre="whatsapp" class="size-5" /> Pedir presupuesto
+      </a>
+      <a href={SITIO.instagram} target="_blank" rel="noopener" class="btn-borde text-crema/85">
+        <Icono nombre="instagram" class="size-4" /> Ver Instagram
+      </a>
+    </div>
+    <p class="mt-6 text-xs tracking-wide text-crema/40">Atención {SITIO.horario.toLowerCase()} · Respondemos rápido</p>
+  </div>
+</section>

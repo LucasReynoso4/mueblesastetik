@@ -1,0 +1,113 @@
+---
+import Base from '../layouts/Base.astro';
+import ProductoCard from '../components/ProductoCard.astro';
+import Cta from '../components/Cta.astro';
+import { PRODUCTOS, CATEGORIAS, USOS } from '../data/productos';
+import { linkWhatsApp, MENSAJE_GENERAL } from '../data/sitio';
+
+const listado = {
+  '@context': 'https://schema.org',
+  '@type': 'ItemList',
+  itemListElement: PRODUCTOS.map((p, i) => ({
+    '@type': 'ListItem',
+    position: i + 1,
+    url: new URL(`/productos/${p.slug}`, Astro.site).href,
+    name: p.nombre,
+  })),
+};
+---
+<Base
+  titulo="Catálogo"
+  descripcion="Catálogo de sillones, puffs, mostradores, respaldos y camillas capitoné. Todos los modelos se fabrican a medida en más de 30 colores."
+  jsonLd={[listado]}
+>
+  <section class="mx-auto max-w-7xl px-5 pt-12 pb-24 md:px-8 md:pt-20">
+    <p class="antetitulo">Catálogo</p>
+    <h1 class="titulo mt-4">Nuestros <em>modelos</em></h1>
+    <p class="mt-5 max-w-2xl leading-relaxed text-tinta/65">
+      Cada modelo se fabrica a medida, en la tela y el color que elijas. Las fotos muestran un ejemplo: <a href="/colores" class="underline decoration-oro underline-offset-4 hover:text-oro">mirá el muestrario completo</a>.
+    </p>
+
+    <div id="filtros" class="sticky top-18 z-30 -mx-5 mt-10 border-y border-linea bg-crema/95 px-5 py-4 backdrop-blur md:top-20 md:mx-0 md:px-0">
+      <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+        <div class="-mx-5 flex gap-2 overflow-x-auto px-5 [scrollbar-width:none] md:mx-0 md:flex-wrap md:px-0" role="group" aria-label="Filtrar por categoría">
+          <button type="button" data-filtro="categoria" data-valor="" class="chip" aria-pressed="true">Todos</button>
+          {CATEGORIAS.map((c) => (
+            <button type="button" data-filtro="categoria" data-valor={c.id} class="chip" aria-pressed="false">{c.nombre}</button>
+          ))}
+        </div>
+        <label class="flex items-center gap-3 text-xs uppercase tracking-[0.15em] text-tinta/60">
+          Uso
+          <select data-filtro-uso class="border border-linea bg-white px-3 py-2 text-sm tracking-normal normal-case text-tinta">
+            <option value="">Todos</option>
+            {USOS.map((u) => <option value={u.id}>{u.nombre}</option>)}
+          </select>
+        </label>
+      </div>
+    </div>
+
+    <p data-resultado class="mt-6 text-sm text-tinta/55" aria-live="polite">{PRODUCTOS.length} modelos</p>
+
+    <div class="mt-6 grid grid-cols-2 gap-x-3 gap-y-10 sm:gap-x-6 sm:gap-y-12 lg:grid-cols-3">
+      {PRODUCTOS.map((p, i) => <ProductoCard producto={p} prioridad={i < 3} />)}
+    </div>
+    <p data-sin-resultados hidden class="py-16 text-center text-tinta/60">
+      No hay modelos con esos filtros. Igual consultanos: <a class="underline" href={linkWhatsApp(MENSAJE_GENERAL)} target="_blank" rel="noopener">fabricamos a pedido</a>.
+    </p>
+  </section>
+  <Cta titulo="¿No encontraste lo que buscás?" enfasis="Lo fabricamos a pedido." />
+</Base>
+
+<style>
+  @reference '../styles/global.css';
+  .chip {
+    @apply shrink-0 cursor-pointer border border-linea bg-white px-4 py-2 text-xs uppercase tracking-[0.15em] whitespace-nowrap text-tinta/70 transition hover:border-oro;
+  }
+  .chip[aria-pressed='true'] {
+    @apply border-noche bg-noche text-crema;
+  }
+</style>
+
+<script>
+  const tarjetas = [...document.querySelectorAll<HTMLElement>('[data-producto]')];
+  const chips = [...document.querySelectorAll<HTMLButtonElement>('[data-filtro="categoria"]')];
+  const selectUso = document.querySelector<HTMLSelectElement>('[data-filtro-uso]')!;
+  const resultado = document.querySelector<HTMLElement>('[data-resultado]')!;
+  const sinResultados = document.querySelector<HTMLElement>('[data-sin-resultados]')!;
+
+  function aplicar(categoria: string, uso: string, actualizarUrl = true) {
+    let visibles = 0;
+    for (const t of tarjetas) {
+      const ok = (!categoria || t.dataset.categoria === categoria) && (!uso || t.dataset.usos!.split(' ').includes(uso));
+      t.hidden = !ok;
+      if (ok) visibles++;
+    }
+    chips.forEach((c) => c.setAttribute('aria-pressed', String(c.dataset.valor === categoria)));
+    selectUso.value = uso;
+    resultado.textContent = `${visibles} ${visibles === 1 ? 'modelo' : 'modelos'}`;
+    sinResultados.hidden = visibles > 0;
+
+    if (actualizarUrl) {
+      const url = new URL(location.href);
+      categoria ? url.searchParams.set('categoria', categoria) : url.searchParams.delete('categoria');
+      uso ? url.searchParams.set('uso', uso) : url.searchParams.delete('uso');
+      history.replaceState(null, '', url);
+    }
+  }
+
+  const params = new URLSearchParams(location.search);
+  let categoria = params.get('categoria') ?? '';
+  let uso = params.get('uso') ?? '';
+  aplicar(categoria, uso, false);
+
+  chips.forEach((c) =>
+    c.addEventListener('click', () => {
+      categoria = c.dataset.valor ?? '';
+      aplicar(categoria, uso);
+    }),
+  );
+  selectUso.addEventListener('change', () => {
+    uso = selectUso.value;
+    aplicar(categoria, uso);
+  });
+</script>
