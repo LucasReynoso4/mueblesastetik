@@ -3,7 +3,7 @@ import { Picture, getImage } from 'astro:assets';
 import Base from '../../layouts/Base.astro';
 import ProductoCard from '../../components/ProductoCard.astro';
 import Icono from '../../components/Icono.astro';
-import { PRODUCTOS, nombreCategoria, nombreUso, type Producto } from '../../data/productos';
+import { PRODUCTOS, formatoPrecio, nombreCategoria, nombreUso, type Foto, type Producto } from '../../data/productos';
 import { TELAS, colorDe, telaPorId } from '../../data/colores';
 import { SITIO, linkWhatsApp } from '../../data/sitio';
 
@@ -13,11 +13,24 @@ export function getStaticPaths() {
 
 const { producto: p } = Astro.props as { producto: Producto };
 const telas = TELAS.filter((t) => !p.telas || p.telas.includes(t.id));
-const telaInicial = telaPorId(p.foto.tela) ?? telas[0];
-const colorInicial = colorDe(p.foto.tela, p.foto.color) ?? telaInicial.colores[0];
-const eleccion = (tela: string, color: string) => `${tela.toLowerCase()} ${color.toLowerCase()}`;
-const eleccionInicial = eleccion(telaInicial.nombre, colorInicial.nombre);
-const mensaje = (texto: string) => `¡Hola! Vi en su página el modelo ${p.nombre} y me interesa en ${texto}. ¿Me pasan precio y demora?`;
+const portada = p.fotos[0];
+const telaInicial = telas.find((t) => t.id === portada.tela) ?? telas[0];
+const colorInicial = (portada.color && colorDe(telaInicial.id, portada.color)) || telaInicial.colores[0];
+const opcionInicial = p.opciones[0];
+const variasOpciones = p.opciones.length > 1;
+const etiquetaOpcion = p.etiquetaOpcion ?? 'Versión';
+
+const eleccion = (opcion: string, tela: string, color: string) =>
+  `${variasOpciones ? `${opcion} · ` : ''}${tela.toLowerCase()} ${color.toLowerCase()}`;
+const eleccionInicial = eleccion(opcionInicial.nombre, telaInicial.nombre, colorInicial.nombre);
+const mensaje = (texto: string) => `¡Hola! Vi en su página el modelo ${p.nombre} y me interesa en ${texto}. ¿Me confirman precio y demora?`;
+
+const etiquetaFoto = (f: Foto) => {
+  const tela = f.tela ? telaPorId(f.tela) : undefined;
+  const color = f.tela && f.color ? colorDe(f.tela, f.color) : undefined;
+  return tela && color ? { texto: `${tela.nombre.toLowerCase()} ${color.nombre.toLowerCase()}`, hex: color.hex } : undefined;
+};
+const etiquetaPortada = etiquetaFoto(portada);
 
 const relacionados = PRODUCTOS.filter((o) => o.slug !== p.slug)
   .map((o) => ({ o, puntos: (o.categoria === p.categoria ? 2 : 0) + o.usos.filter((u) => p.usos.includes(u)).length }))
@@ -25,7 +38,8 @@ const relacionados = PRODUCTOS.filter((o) => o.slug !== p.slug)
   .slice(0, 3)
   .map(({ o }) => o);
 
-const og = await getImage({ src: p.imagenes[0], width: 600, format: 'jpg' });
+const og = await getImage({ src: portada.imagen, width: 600, format: 'jpg' });
+const precios = p.opciones.map((o) => o.precio);
 
 const jsonLd = [
   {
@@ -37,6 +51,14 @@ const jsonLd = [
     category: nombreCategoria(p.categoria),
     brand: { '@type': 'Brand', name: SITIO.nombre },
     material: telas.map((t) => t.nombre).join(', '),
+    offers: {
+      '@type': 'AggregateOffer',
+      priceCurrency: 'ARS',
+      lowPrice: Math.min(...precios),
+      highPrice: Math.max(...precios),
+      offerCount: p.opciones.length,
+      availability: 'https://schema.org/MadeToOrder',
+    },
   },
   {
     '@context': 'https://schema.org',
@@ -48,6 +70,8 @@ const jsonLd = [
     ],
   },
 ];
+
+let paso = 0;
 ---
 <Base titulo={p.nombre} descripcion={`${p.resumen} Fabricado a medida en más de 30 colores. Envíos a todo el país.`} imagen={og.src} jsonLd={jsonLd}>
   <nav aria-label="Ruta" class="mx-auto max-w-7xl px-5 pt-6 text-sm text-humo md:px-7">
@@ -58,28 +82,39 @@ const jsonLd = [
     </ol>
   </nav>
 
-  <article class="mx-auto grid max-w-7xl gap-3 px-3 pt-4 pb-16 md:grid-cols-2 md:px-5 md:pb-24" data-ficha data-nombre={p.nombre}>
+  <article class="mx-auto grid max-w-7xl gap-3 px-3 pt-4 pb-16 md:grid-cols-2 md:px-5 md:pb-24" data-ficha data-nombre={p.nombre} data-varias-opciones={variasOpciones ? '' : undefined}>
     <div class="md:sticky md:top-24 md:self-start">
       <div class="tarjeta relative" style={`view-transition-name: foto-${p.slug}`}>
-        <Picture
-          src={p.imagenes[0]}
-          alt={`${p.nombre} en ${eleccionInicial}`}
-          formats={['avif', 'webp']}
-          widths={[480, 600]}
-          sizes="(min-width: 768px) 50vw, 100vw"
-          loading="eager"
-          fetchpriority="high"
-          class="aspect-[4/5] w-full object-cover"
-        />
-        <p class="etiqueta absolute bottom-4 left-4">
-          <span class="size-3 rounded-full ring-1 ring-tinta/10" style={`background:${colorInicial.hex}`}></span>
-          En la foto: {telaInicial.nombre.toLowerCase()} {colorInicial.nombre.toLowerCase()}
+        {p.fotos.map((f, i) => (
+          <Picture
+            src={f.imagen}
+            alt={`${p.nombre}${etiquetaFoto(f) ? ` en ${etiquetaFoto(f)!.texto}` : ''}`}
+            formats={['avif', 'webp']}
+            fallbackFormat="webp"
+            widths={[480, 600, 800]}
+            sizes="(min-width: 768px) 50vw, 100vw"
+            loading={i === 0 ? 'eager' : 'lazy'}
+            fetchpriority={i === 0 ? 'high' : undefined}
+            hidden={i !== 0}
+            data-foto={i}
+            data-tela={f.tela}
+            data-color={f.color}
+            data-etiqueta={etiquetaFoto(f)?.texto}
+            data-hex={etiquetaFoto(f)?.hex}
+            class="aspect-[4/5] w-full object-cover"
+          />
+        ))}
+        <p data-etiqueta-foto hidden={!etiquetaPortada} class="etiqueta absolute bottom-4 left-4">
+          <span data-etiqueta-hex class="size-3 rounded-full ring-1 ring-tinta/10" style={`background:${etiquetaPortada?.hex ?? 'transparent'}`}></span>
+          En la foto: <span data-etiqueta-texto>{etiquetaPortada?.texto}</span>
         </p>
       </div>
-      {p.imagenes.length > 1 && (
-        <div class="mt-3 grid grid-cols-4 gap-3">
-          {p.imagenes.slice(1).map((img) => (
-            <Picture src={img} alt={p.nombre} formats={['webp']} widths={[240]} sizes="25vw" class="aspect-square w-full rounded-2xl object-cover" />
+      {p.fotos.length > 1 && (
+        <div class="mt-3 grid grid-cols-5 gap-2 sm:grid-cols-7">
+          {p.fotos.map((f, i) => (
+            <button type="button" data-miniatura={i} aria-label={`Ver foto ${i + 1}${etiquetaFoto(f) ? `: ${etiquetaFoto(f)!.texto}` : ''}`} aria-current={i === 0 ? 'true' : undefined} class="miniatura">
+              <Picture src={f.imagen} alt="" formats={['webp']} fallbackFormat="webp" widths={[160]} sizes="80px" class="aspect-square w-full object-cover" />
+            </button>
           ))}
         </div>
       )}
@@ -88,6 +123,8 @@ const jsonLd = [
     <div class="entrada rounded-[var(--radius-tarjeta)] bg-white p-6 md:p-10" style="--d:1">
       <span class="etiqueta !bg-papel">{nombreCategoria(p.categoria)}</span>
       <h1 class="mt-4 text-4xl leading-[1] font-semibold tracking-[-0.035em] md:text-5xl">{p.nombre}</h1>
+      <p class="mt-4 text-3xl font-semibold tracking-tight" data-precio>{formatoPrecio(opcionInicial.precio)}</p>
+      <p class="mt-1 text-sm text-humo">Precio publicado en Mercado Libre. Consultanos por pago directo y envío.</p>
       <p class="mt-4 text-lg leading-relaxed text-humo">{p.descripcion}</p>
 
       <ul class="mt-5 flex flex-wrap gap-2">
@@ -97,8 +134,25 @@ const jsonLd = [
       </ul>
 
       <div class="mt-8 rounded-3xl bg-papel p-5 md:p-6" data-selector>
+        {variasOpciones && (
+          <fieldset class="mb-6">
+            <legend class="font-semibold">{++paso}. Elegí {etiquetaOpcion.toLowerCase()}</legend>
+            <div class="mt-3 flex flex-wrap gap-2">
+              {p.opciones.map((o, i) => (
+                <label class="cursor-pointer">
+                  <input type="radio" name="opcion" value={o.nombre} data-precio={formatoPrecio(o.precio)} data-ml={o.mercadolibre} checked={i === 0} class="peer sr-only" />
+                  <span class="flex min-h-11 items-center gap-1.5 rounded-full bg-white px-4 text-[15px] ring-1 ring-linea transition peer-checked:bg-tinta peer-checked:text-white peer-checked:ring-tinta peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-acento">
+                    {o.nombre}
+                    <span class="text-sm opacity-60">{formatoPrecio(o.precio)}</span>
+                  </span>
+                </label>
+              ))}
+            </div>
+          </fieldset>
+        )}
+
         <fieldset>
-          <legend class="font-semibold">1. Elegí la tela</legend>
+          <legend class="font-semibold">{++paso}. Elegí la tela</legend>
           <div class="mt-3 flex flex-wrap gap-2">
             {telas.map((t) => (
               <label class="cursor-pointer">
@@ -114,14 +168,14 @@ const jsonLd = [
 
         <fieldset class="mt-6">
           <legend class="flex w-full items-baseline justify-between gap-4 font-semibold">
-            <span>2. Elegí el color</span>
+            <span>{++paso}. Elegí el color</span>
             <span class="font-serif text-xl font-normal text-acento italic" data-color-nombre>{colorInicial.nombre}</span>
           </legend>
           {telas.map((t) => (
             <div data-colores-tela={t.id} hidden={t.id !== telaInicial.id} class="mt-3 flex flex-wrap gap-2">
               {t.colores.map((c) => (
                 <label class="cursor-pointer" title={c.nombre}>
-                  <input type="radio" name={`color-${t.id}`} value={c.nombre} checked={t.id === telaInicial.id ? c.id === colorInicial.id : c === t.colores[0]} class="peer sr-only" />
+                  <input type="radio" name={`color-${t.id}`} value={c.nombre} data-id={c.id} checked={t.id === telaInicial.id ? c.id === colorInicial.id : c === t.colores[0]} class="peer sr-only" />
                   <span class="block size-12 rounded-full p-1 ring-2 ring-transparent transition peer-checked:ring-tinta peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-acento">
                     <span class="block size-full rounded-full ring-1 ring-tinta/10" style={`background:${c.hex}`}></span>
                   </span>
@@ -131,21 +185,21 @@ const jsonLd = [
             </div>
           ))}
           <p class="mt-4 text-sm text-humo">
-            ¿Buscás otro tono? Tenemos más de 30. <a href="/colores" class="font-medium text-tinta underline underline-offset-4 hover:text-acento">Ver todos</a>
+            Los colores con foto cambian la imagen. <a href="/colores" class="font-medium text-tinta underline underline-offset-4 hover:text-acento">Ver muestrario</a>
           </p>
         </fieldset>
       </div>
 
       <div class="mt-6 flex flex-col gap-2.5">
         <a data-wa-producto href={linkWhatsApp(mensaje(eleccionInicial))} target="_blank" rel="noopener" class="btn-wa w-full !min-h-14 !text-base">
-          <Icono nombre="whatsapp" class="size-5" /> Consultar precio por WhatsApp
+          <Icono nombre="whatsapp" class="size-5" /> Consultar por WhatsApp
         </a>
         <div class="grid grid-cols-2 gap-2.5">
           <button type="button" data-agregar data-slug={p.slug} data-nombre={p.nombre} data-color={eleccionInicial} class="btn-claro">
             <Icono nombre="mas" class="size-4" /> A mi lista
           </button>
-          <a href={p.mercadolibre ?? SITIO.mercadolibre} target="_blank" rel="noopener" class="btn-ml">
-            {p.mercadolibre ? 'Mercado Libre' : 'Ver en ML'}
+          <a data-ml-producto href={opcionInicial.mercadolibre} target="_blank" rel="noopener" class="btn-ml">
+            Mercado Libre
           </a>
         </div>
       </div>
@@ -177,25 +231,63 @@ const jsonLd = [
   </section>
 </Base>
 
+<style>
+  @reference '../../styles/global.css';
+  .miniatura {
+    @apply cursor-pointer overflow-hidden rounded-2xl opacity-70 ring-2 ring-transparent transition hover:opacity-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-acento;
+  }
+  .miniatura[aria-current='true'] {
+    @apply opacity-100 ring-tinta;
+  }
+</style>
+
 <script>
   const ficha = document.querySelector<HTMLElement>('[data-ficha]')!;
   const selector = ficha.querySelector<HTMLElement>('[data-selector]')!;
   const nombre = ficha.dataset.nombre!;
+  const variasOpciones = ficha.hasAttribute('data-varias-opciones');
   const wa = ficha.querySelector<HTMLAnchorElement>('[data-wa-producto]')!;
+  const ml = ficha.querySelector<HTMLAnchorElement>('[data-ml-producto]')!;
   const agregar = ficha.querySelector<HTMLButtonElement>('[data-agregar]')!;
   const etiqueta = ficha.querySelector<HTMLElement>('[data-color-nombre]')!;
+  const precio = ficha.querySelector<HTMLElement>('[data-precio]')!;
+  const fotos = [...ficha.querySelectorAll<HTMLImageElement>('img[data-foto]')];
+  const miniaturas = [...ficha.querySelectorAll<HTMLButtonElement>('[data-miniatura]')];
+  const etiquetaFoto = ficha.querySelector<HTMLElement>('[data-etiqueta-foto]')!;
 
-  function actualizar() {
+  function mostrarFoto(indice: number) {
+    fotos.forEach((f, i) => (f.hidden = i !== indice));
+    miniaturas.forEach((m, i) => (i === indice ? m.setAttribute('aria-current', 'true') : m.removeAttribute('aria-current')));
+    const { etiqueta: texto, hex } = fotos[indice].dataset;
+    etiquetaFoto.hidden = !texto;
+    etiquetaFoto.querySelector<HTMLElement>('[data-etiqueta-texto]')!.textContent = texto ?? '';
+    etiquetaFoto.querySelector<HTMLElement>('[data-etiqueta-hex]')!.style.background = hex ?? 'transparent';
+  }
+
+  miniaturas.forEach((m, i) => m.addEventListener('click', () => mostrarFoto(i)));
+
+  function actualizar(evento: Event) {
     const tela = selector.querySelector<HTMLInputElement>('input[name="tela"]:checked')!;
     selector.querySelectorAll<HTMLElement>('[data-colores-tela]').forEach((g) => (g.hidden = g.dataset.coloresTela !== tela.value));
     selector.querySelectorAll<HTMLElement>('[data-descripcion-tela]').forEach((d) => (d.hidden = d.dataset.descripcionTela !== tela.value));
     const color = selector.querySelector<HTMLInputElement>(`input[name="color-${tela.value}"]:checked`)!;
+    const opcion = selector.querySelector<HTMLInputElement>('input[name="opcion"]:checked');
 
-    const texto = `${tela.dataset.nombre!.toLowerCase()} ${color.value.toLowerCase()}`;
+    if (opcion) {
+      precio.textContent = opcion.dataset.precio!;
+      ml.href = opcion.dataset.ml!;
+    }
+
+    if ((evento.target as HTMLInputElement).name !== 'opcion') {
+      const indice = fotos.findIndex((f) => f.dataset.tela === tela.value && f.dataset.color === color.dataset.id);
+      if (indice >= 0) mostrarFoto(indice);
+    }
+
+    const texto = `${variasOpciones && opcion ? `${opcion.value} · ` : ''}${tela.dataset.nombre!.toLowerCase()} ${color.value.toLowerCase()}`;
     etiqueta.textContent = color.value;
     agregar.dataset.color = texto;
     const url = new URL(wa.href);
-    url.searchParams.set('text', `¡Hola! Vi en su página el modelo ${nombre} y me interesa en ${texto}. ¿Me pasan precio y demora?`);
+    url.searchParams.set('text', `¡Hola! Vi en su página el modelo ${nombre} y me interesa en ${texto}. ¿Me confirman precio y demora?`);
     wa.href = url.href;
   }
 

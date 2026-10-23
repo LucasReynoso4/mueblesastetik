@@ -4,43 +4,58 @@ import Base from '../layouts/Base.astro';
 import ProductoCard from '../components/ProductoCard.astro';
 import Cta from '../components/Cta.astro';
 import Icono from '../components/Icono.astro';
-import hero from '../assets/hero.jpg';
 import { PRODUCTOS, CATEGORIAS, productoPorSlug } from '../data/productos';
-import { TELAS } from '../data/colores';
+import { TELAS, CANTIDAD_COLORES } from '../data/colores';
 import { SITIO, CIFRAS, linkWhatsApp, MENSAJE_GENERAL } from '../data/sitio';
 
 const destacados = PRODUCTOS.filter((p) => p.destacado).slice(0, 6);
 const categorias = CATEGORIAS.map((c) => {
   const productos = PRODUCTOS.filter((p) => p.categoria === c.id);
-  return { ...c, cantidad: productos.length, imagen: productos[0]?.imagenes[0] };
+  return { ...c, cantidad: productos.length, imagen: productos[0]?.fotos[0].imagen };
 }).filter((c) => c.cantidad > 0);
 
 const mostrador = productoPorSlug('mostrador-capitone')!;
-const camilla = productoPorSlug('camilla-capitone')!;
+const camilla = productoPorSlug('camilla-lashista')!;
 
-const DESFILE = ['Hecho a medida', 'Más de 30 colores', 'Envíos a todo el país', 'Fabricación propia', 'Terciopelo y eco-cuero', 'Equipamiento para salones'];
+const flor = productoPorSlug('respaldo-flor')!;
+const colorFlor = ['fucsia', 'azul-francia', 'verde-esmeralda', 'amarillo'].map((c) => flor.fotos.find((f) => f.color === c)!);
+const mosaico = [productoPorSlug('sillon-labios')!, productoPorSlug('puff-capitone-grande')!];
+
+const DESFILE = ['Hecho a medida', 'Más de 30 colores', 'Envíos a todo el país', 'Fabricación propia', 'Pana y eco-cuero', 'Equipamiento para salones'];
 ---
 <Base>
-  <!-- PORTADA -->
-  <section class="mx-auto max-w-7xl px-3 pt-4 md:px-5 md:pt-8">
-    <div class="relative isolate flex min-h-[calc(100svh-11rem)] flex-col justify-end overflow-hidden rounded-[var(--radius-tarjeta)] bg-tinta text-white md:min-h-[640px] lg:justify-center">
-      <Picture src={hero} alt="Sillones de relax capitoné en un spa" formats={['avif', 'webp']} widths={[640, 1024, 1600]} sizes="(min-width: 1280px) 1240px, 100vw" loading="eager" fetchpriority="high" class="zoom-entrada absolute inset-0 -z-10 size-full object-cover" />
-      <div class="absolute inset-0 -z-10 bg-gradient-to-t from-tinta via-tinta/70 to-tinta/10 lg:bg-gradient-to-r lg:from-tinta/95 lg:via-tinta/60 lg:to-transparent"></div>
-      <div class="p-6 pb-8 md:p-12 lg:max-w-2xl lg:p-16">
-        <span class="entrada etiqueta !bg-white/10 !text-white ring-1 ring-white/20 backdrop-blur" style="--d:0"><span class="size-2 rounded-full bg-oro"></span> Más de 1000 ventas en Mercado Libre</span>
-        <h1 class="entrada mt-5 text-[2.6rem] leading-[1.02] font-bold tracking-[-0.035em] text-balance sm:text-6xl lg:text-7xl" style="--d:1">
-          Muebles que <em class="font-serif text-[1.08em] font-normal tracking-normal text-oro italic">enamoran</em>, hechos a tu medida
-        </h1>
-        <p class="entrada mt-5 max-w-md text-lg leading-relaxed text-white/80" style="--d:2">
-          Sillones, puffs, mostradores, respaldos y camillas capitoné. Elegís el modelo, la tela y el color: nosotros lo fabricamos.
-        </p>
-        <div class="entrada mt-8 flex flex-col gap-3 sm:flex-row" style="--d:3">
-          <a href="/catalogo" class="btn group bg-oro text-tinta hover:bg-oro-claro">Ver catálogo <Icono nombre="flecha" class="size-4 transition-transform group-hover:translate-x-1" /></a>
-          <a href={linkWhatsApp(MENSAJE_GENERAL)} target="_blank" rel="noopener" class="btn bg-white/10 text-white ring-1 ring-white/25 backdrop-blur hover:bg-white/20">
-            <Icono nombre="whatsapp" class="size-5" /> Pedir presupuesto
-          </a>
-        </div>
+  <!-- PORTADA: texto + mosaico de fotos reales en su tamaño original (nada estirado) -->
+  <section class="mx-auto grid max-w-7xl gap-3 px-3 pt-4 md:px-5 md:pt-8 lg:min-h-[640px] lg:grid-cols-12">
+    <div class="relative isolate flex flex-col justify-end overflow-hidden rounded-[var(--radius-tarjeta)] bg-tinta p-6 pb-8 text-white md:p-12 lg:col-span-5 lg:p-14">
+      <div class="absolute -top-24 -right-24 -z-10 size-72 rounded-full bg-oro/25 blur-3xl"></div>
+      <span class="entrada etiqueta self-start !bg-white/10 !text-white ring-1 ring-white/20" style="--d:0"><span class="size-2 rounded-full bg-oro"></span> Más de 1000 ventas en Mercado Libre</span>
+      <h1 class="entrada mt-5 text-[2.6rem] leading-[1.02] font-bold tracking-[-0.035em] text-balance sm:text-6xl" style="--d:1">
+        Muebles que <em class="font-serif text-[1.08em] font-normal tracking-normal text-oro italic">enamoran</em>, hechos a tu medida
+      </h1>
+      <p class="entrada mt-5 max-w-md text-lg leading-relaxed text-white/80" style="--d:2">
+        Respaldos, puffs, sillones, mostradores y camillas capitoné. Elegís el modelo, la medida y el color: nosotros lo fabricamos.
+      </p>
+      <div class="entrada mt-8 flex flex-col gap-3 sm:flex-row" style="--d:3">
+        <a href="/catalogo" class="btn group bg-oro text-tinta hover:bg-oro-claro">Ver catálogo <Icono nombre="flecha" class="size-4 transition-transform group-hover:translate-x-1" /></a>
+        <a href={linkWhatsApp(MENSAJE_GENERAL)} target="_blank" rel="noopener" class="btn bg-white/10 text-white ring-1 ring-white/25 hover:bg-white/20">
+          <Icono nombre="whatsapp" class="size-5" /> Pedir presupuesto
+        </a>
       </div>
+    </div>
+
+    <div class="grid h-[420px] grid-cols-2 grid-rows-2 gap-3 sm:h-[520px] lg:col-span-7 lg:h-auto">
+      <a href={`/productos/${flor.slug}`} class="tarjeta group relative row-span-2" aria-label={`${flor.nombre}: disponible en ${colorFlor.length} colores`}>
+        {colorFlor.map((f, i) => (
+          <Picture src={f.imagen} alt="" formats={['avif', 'webp']} fallbackFormat="webp" widths={[400, 600, 800]} sizes="(min-width: 1024px) 30vw, 50vw" loading={i === 0 ? 'eager' : 'lazy'} fetchpriority={i === 0 ? 'high' : undefined} class="ciclo absolute inset-0 size-full object-cover" style={`--i:${i}`} />
+        ))}
+        <span class="etiqueta absolute bottom-3 left-3">{flor.nombre} · {CANTIDAD_COLORES} colores</span>
+      </a>
+      {mosaico.map((p) => (
+        <a href={`/productos/${p.slug}`} class="tarjeta group relative">
+          <Picture src={p.fotos[0].imagen} alt={p.nombre} formats={['avif', 'webp']} fallbackFormat="webp" widths={[400, 600]} sizes="(min-width: 1024px) 30vw, 50vw" loading="eager" class="size-full object-cover transition-transform duration-700 ease-suave group-hover:scale-[1.04]" />
+          <span class="etiqueta absolute bottom-3 left-3 !text-xs">{p.nombre}</span>
+        </a>
+      ))}
     </div>
   </section>
 
@@ -97,7 +112,7 @@ const DESFILE = ['Hecho a medida', 'Más de 30 colores', 'Envíos a todo el paí
       <div class="relative grid gap-10 lg:grid-cols-[1fr_1.1fr] lg:items-center">
         <div>
           <h2 class="titulo max-w-lg [&_em]:!text-oro">Cualquier modelo, <em>en tu color</em></h2>
-          <p class="mt-4 max-w-md text-white/70">Todos los modelos se fabrican en terciopelo o eco-cuero, en el color que elijas.</p>
+          <p class="mt-4 max-w-md text-white/70">Todos los modelos se fabrican en pana antimanchas o eco-cuero, en el color que elijas.</p>
           <a href="/colores" class="btn group mt-8 bg-oro text-tinta hover:bg-oro-claro">Ver telas y colores <Icono nombre="flecha" class="size-4 transition-transform group-hover:translate-x-1" /></a>
         </div>
         <div class="space-y-6">
@@ -128,8 +143,8 @@ const DESFILE = ['Hecho a medida', 'Más de 30 colores', 'Envíos a todo el paí
   <section class="mx-auto max-w-7xl px-3 pt-3 pb-16 md:px-5 md:pb-24">
     <div class="escalonado grid gap-3 md:grid-cols-2">
       {[
-        { href: '/estetica', img: mostrador.imagenes[0], alt: 'Recepción con mostrador capitoné negro', titulo: 'Equipá tu', enfasis: 'salón', texto: 'Mostradores, camillas y sillones de espera en el color de tu marca.' },
-        { href: '/como-comprar', img: camilla.imagenes[0], alt: '', titulo: 'Cómo', enfasis: 'comprar', texto: 'Elegís, te pasamos presupuesto por WhatsApp, lo fabricamos y te lo enviamos.' },
+        { href: '/estetica', img: mostrador.fotos[0].imagen, alt: 'Recepción con mostrador capitoné fucsia', titulo: 'Equipá tu', enfasis: 'salón', texto: 'Mostradores, camillas y sillones de espera en el color de tu marca.' },
+        { href: '/como-comprar', img: camilla.fotos[0].imagen, alt: '', titulo: 'Cómo', enfasis: 'comprar', texto: 'Elegís, te pasamos presupuesto por WhatsApp, lo fabricamos y te lo enviamos.' },
       ].map((b) => (
         <a href={b.href} class="group elevable grid grid-cols-[7.5rem_1fr] overflow-hidden rounded-[var(--radius-tarjeta)] bg-white md:grid-cols-1">
           <div class="overflow-hidden">
@@ -154,3 +169,23 @@ const DESFILE = ['Hecho a medida', 'Más de 30 colores', 'Envíos a todo el paí
 
   <Cta />
 </Base>
+
+<style>
+  /* La foto grande de la portada va pasando por distintos colores del mismo respaldo */
+  .ciclo {
+    opacity: 0;
+    animation: ciclo 16s linear infinite backwards;
+    animation-delay: calc(var(--i) * 4s - 1s);
+  }
+  .ciclo:first-child {
+    opacity: 1;
+  }
+  @keyframes ciclo {
+    0% { opacity: 0; }
+    5%, 25% { opacity: 1; }
+    30%, 100% { opacity: 0; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .ciclo { animation: none; }
+  }
+</style>

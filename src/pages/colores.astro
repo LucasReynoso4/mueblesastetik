@@ -1,4 +1,5 @@
 ---
+import { Picture } from 'astro:assets';
 import Base from '../layouts/Base.astro';
 import Cta from '../components/Cta.astro';
 import Icono from '../components/Icono.astro';
@@ -11,7 +12,7 @@ import { linkWhatsApp } from '../data/sitio';
     <div class="px-2">
       <h1 class="titulo">Telas <em>y colores</em></h1>
       <p class="mt-5 max-w-2xl text-lg leading-relaxed text-humo">
-        Todos los modelos se fabrican en la tela y el color que elijas. Acá están los más pedidos; trabajamos con más de 30, así que si buscás un tono especial, consultanos.
+        Todos los modelos se fabrican en la tela y el color que elijas. Estos son los colores con los que trabajamos hoy. Si buscás un tono especial, consultanos.
       </p>
       <p class="mt-2 text-sm text-humo">Los colores en pantalla son aproximados. Si querés, te mandamos fotos de la tela real por WhatsApp.</p>
       <nav class="mt-6 flex flex-wrap gap-2" aria-label="Telas">
@@ -25,6 +26,16 @@ import { linkWhatsApp } from '../data/sitio';
           <h2 class="text-4xl font-semibold tracking-tight">{t.nombre}</h2>
           <p class="max-w-md text-humo">{t.descripcion}</p>
         </div>
+        {t.fotos && (
+          <div class="mt-8 grid gap-3 sm:grid-cols-2">
+            {t.fotos.map((f) => (
+              <figure class="rounded-3xl bg-papel p-2.5">
+                <Picture src={f.imagen} alt={f.alt} formats={['avif', 'webp']} fallbackFormat="webp" widths={[400, 700]} sizes="(min-width: 640px) 50vw, 100vw" class="aspect-[4/3] w-full rounded-2xl object-cover" />
+                <figcaption class="mt-2.5 pl-1.5 text-sm text-humo">{f.alt}</figcaption>
+              </figure>
+            ))}
+          </div>
+        )}
         <ul class="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
           {t.colores.map((c) => (
             <li class="reveal rounded-3xl bg-papel p-2.5">

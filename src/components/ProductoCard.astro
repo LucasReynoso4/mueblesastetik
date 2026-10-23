@@ -1,7 +1,7 @@
 ---
 import { Picture } from 'astro:assets';
 import type { Producto } from '../data/productos';
-import { nombreCategoria } from '../data/productos';
+import { formatoPrecio, nombreCategoria, precioDesde } from '../data/productos';
 import { TELAS } from '../data/colores';
 
 interface Props {
@@ -21,9 +21,10 @@ const resto = colores.length - muestra.length;
 >
   <div class="tarjeta elevable relative aspect-[4/5]" style={`view-transition-name: foto-${p.slug}`}>
     <Picture
-      src={p.imagenes[0]}
+      src={p.fotos[0].imagen}
       alt={p.nombre}
       formats={['avif', 'webp']}
+      fallbackFormat="webp"
       widths={[320, 480, 600]}
       sizes="(min-width: 1024px) 30vw, 50vw"
       loading={prioridad ? 'eager' : 'lazy'}
@@ -39,5 +40,8 @@ const resto = colores.length - muestra.length;
       {muestra.map((c) => <span class="size-3.5 rounded-full ring-1 ring-tinta/10" style={`background:${c.hex}`}></span>)}
       {resto > 0 && <span class="ml-1 text-xs text-humo">+{resto}</span>}
     </div>
+    <p class="mt-2 text-sm">
+      {p.opciones.length > 1 && <span class="text-humo">Desde </span>}<span class="font-semibold">{formatoPrecio(precioDesde(p))}</span>
+    </p>
   </div>
 </article>
