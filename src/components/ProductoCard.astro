@@ -1,7 +1,7 @@
 ---
 import { Picture } from 'astro:assets';
 import type { Producto } from '../data/productos';
-import { nombreCategoria } from '../data/productos';
+import { formatoPrecio, nombreCategoria, precioDesde } from '../data/productos';
 
 interface Props {
   producto: Producto;
@@ -17,9 +17,9 @@ const { producto: p, prioridad = false } = Astro.props;
 >
   <div class="relative aspect-[4/5] overflow-hidden bg-linea">
     <Picture
-      src={p.imagenes[0]}
+      src={p.fotos[0].imagen}
       alt={p.nombre}
-      formats={['avif', 'webp']}
+      formats={['avif', 'webp']} fallbackFormat="webp"
       widths={[320, 480, 600]}
       sizes="(min-width: 1024px) 33vw, 50vw"
       loading={prioridad ? 'eager' : 'lazy'}
@@ -32,5 +32,9 @@ const { producto: p, prioridad = false } = Astro.props;
       <a href={`/productos/${p.slug}`} class="after:absolute after:inset-0">{p.nombre}</a>
     </h3>
     <p class="mt-1.5 hidden text-sm leading-relaxed text-tinta/60 sm:block">{p.resumen}</p>
+    <p class="mt-2 text-sm text-tinta/80">
+      {p.opciones.length > 1 && <span class="text-tinta/50">Desde </span>}{formatoPrecio(precioDesde(p))}
+      {p.opciones.length > 1 && <span class="text-tinta/50"> · {p.opciones.length} {(p.etiquetaOpcion ?? 'opción').toLowerCase() === 'medida' ? 'medidas' : 'opciones'}</span>}
+    </p>
   </div>
 </article>

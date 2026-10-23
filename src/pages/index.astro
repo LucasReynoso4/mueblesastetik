@@ -12,7 +12,7 @@ import { SITIO, CIFRAS, linkWhatsApp, MENSAJE_GENERAL } from '../data/sitio';
 const destacados = PRODUCTOS.filter((p) => p.destacado).slice(0, 6);
 const categorias = CATEGORIAS.map((c) => {
   const productos = PRODUCTOS.filter((p) => p.categoria === c.id);
-  return { ...c, cantidad: productos.length, imagen: productos[0]?.imagenes[0] };
+  return { ...c, cantidad: productos.length, imagen: productos[0]?.fotos[0].imagen };
 }).filter((c) => c.cantidad > 0);
 
 const BENEFICIOS = [
@@ -140,7 +140,7 @@ const BENEFICIOS = [
   <!-- SALONES -->
   <section class="mx-auto max-w-7xl px-5 py-20 md:px-8 md:py-28">
     <div class="reveal grid items-center gap-10 overflow-hidden border border-linea bg-gradient-to-br from-marfil to-[#f3efe5] md:grid-cols-2">
-      <Image src={PRODUCTOS.find((p) => p.slug === 'mostrador-capitone')!.imagenes[0]} alt="Recepción con mostrador capitoné negro" widths={[480, 600]} sizes="(min-width: 768px) 50vw, 100vw" class="aspect-[4/3] size-full object-cover md:aspect-auto md:h-full" />
+      <Image src={PRODUCTOS.find((p) => p.slug === 'mostrador-curvo-capitone')!.fotos[0].imagen} alt="Recepción con mostrador curvo capitoné rojo" widths={[480, 600]} sizes="(min-width: 768px) 50vw, 100vw" class="aspect-[4/3] size-full object-cover md:aspect-auto md:h-full" />
       <div class="px-6 pb-10 md:py-14 md:pr-14 md:pl-0">
         <p class="antetitulo">Para profesionales</p>
         <h2 class="titulo mt-4 !text-4xl md:!text-5xl">Equipá tu salón <em>con identidad</em></h2>

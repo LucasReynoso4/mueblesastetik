@@ -1,4 +1,5 @@
 ---
+import { Picture } from 'astro:assets';
 import Base from '../layouts/Base.astro';
 import Cta from '../components/Cta.astro';
 import Icono from '../components/Icono.astro';
@@ -11,7 +12,7 @@ import { linkWhatsApp } from '../data/sitio';
     <p class="antetitulo">Muestrario</p>
     <h1 class="titulo mt-4">Colores <em>y telas</em></h1>
     <p class="mt-5 max-w-2xl leading-relaxed text-tinta/65">
-      Todos los modelos se fabrican en la tela y el color que elijas. Acá tenés una selección de los más pedidos; trabajamos con más de 30, así que si buscás un tono especial, consultanos.
+      Todos los modelos se fabrican en la tela y el color que elijas. Estos son los colores con los que trabajamos hoy. Si buscás un tono especial, consultanos.
     </p>
     <p class="mt-3 text-sm text-tinta/45">Los colores en pantalla son aproximados. Si querés, te mandamos fotos de la tela real por WhatsApp.</p>
 
@@ -25,6 +26,16 @@ import { linkWhatsApp } from '../data/sitio';
           <h2 class="font-serif text-3xl">{t.nombre}</h2>
           <p class="max-w-md text-sm text-tinta/60">{t.descripcion}</p>
         </div>
+        {t.fotos && (
+          <div class="mt-8 grid gap-4 sm:grid-cols-2">
+            {t.fotos.map((f) => (
+              <figure class="border border-linea bg-white p-3">
+                <Picture src={f.imagen} alt={f.alt} formats={['avif', 'webp']} fallbackFormat="webp" widths={[400, 700]} sizes="(min-width: 640px) 50vw, 100vw" class="aspect-[4/3] w-full object-cover" />
+                <figcaption class="mt-2 text-xs uppercase tracking-[0.15em] text-tinta/55">{f.alt}</figcaption>
+              </figure>
+            ))}
+          </div>
+        )}
         <ul class="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
           {t.colores.map((c) => (
             <li class="reveal group border border-linea bg-white p-3">

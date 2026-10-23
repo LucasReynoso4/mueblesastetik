@@ -1,7 +1,7 @@
 // Lista de consulta: el cliente junta productos (con el color elegido)
 // y manda un solo mensaje de WhatsApp con todo.
 
-/** `color` es la elección completa, por ejemplo "terciopelo azul royal" */
+/** `color` es la elección completa, por ejemplo "140 cm · pana azul francia" */
 export type ItemLista = { slug: string; nombre: string; color?: string };
 
 const CLAVE = 'astetik-lista';
