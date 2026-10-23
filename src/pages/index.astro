@@ -46,9 +46,20 @@ const DESFILE = ['Hecho a medida', 'Más de 30 colores', 'Envíos a todo el paí
     <div class="grid h-[420px] grid-cols-2 grid-rows-2 gap-3 sm:h-[520px] lg:col-span-7 lg:h-auto">
       <a href={`/productos/${flor.slug}`} class="tarjeta group relative row-span-2" aria-label={`${flor.nombre}: disponible en ${colorFlor.length} colores`}>
         {colorFlor.map((f, i) => (
-          <Picture src={f.imagen} alt="" formats={['avif', 'webp']} fallbackFormat="webp" widths={[400, 600, 800]} sizes="(min-width: 1024px) 30vw, 50vw" loading={i === 0 ? 'eager' : 'lazy'} fetchpriority={i === 0 ? 'high' : undefined} class="ciclo absolute inset-0 size-full object-cover" style={`--i:${i}`} />
+          <Picture
+            src={f.imagen}
+            alt=""
+            formats={['avif', 'webp']}
+            fallbackFormat="webp"
+            widths={[400, 600, 800]}
+            sizes="(min-width: 1024px) 30vw, 50vw"
+            loading="eager"
+            fetchpriority={i === 0 ? 'high' : undefined}
+            class:list={['absolute inset-0 size-full object-cover', i > 0 && 'ciclo']}
+            style={i > 0 ? `animation-delay: ${i * 4}s` : undefined}
+          />
         ))}
-        <span class="etiqueta absolute bottom-3 left-3">{flor.nombre} · {CANTIDAD_COLORES} colores</span>
+        <span class="etiqueta absolute bottom-3 left-3 !text-xs sm:!text-sm">{flor.nombre}<span class="hidden sm:inline">&nbsp;· {CANTIDAD_COLORES} colores</span></span>
       </a>
       {mosaico.map((p) => (
         <a href={`/productos/${p.slug}`} class="tarjeta group relative">
@@ -171,21 +182,17 @@ const DESFILE = ['Hecho a medida', 'Más de 30 colores', 'Envíos a todo el paí
 </Base>
 
 <style>
-  /* La foto grande de la portada va pasando por distintos colores del mismo respaldo */
-  .ciclo {
+  /* La primera foto queda fija abajo; las demás aparecen encima por turnos (16 s en total) */
+  :global(.ciclo) {
     opacity: 0;
-    animation: ciclo 16s linear infinite backwards;
-    animation-delay: calc(var(--i) * 4s - 1s);
-  }
-  .ciclo:first-child {
-    opacity: 1;
+    animation: ciclo 16s linear infinite;
   }
   @keyframes ciclo {
     0% { opacity: 0; }
-    5%, 25% { opacity: 1; }
-    30%, 100% { opacity: 0; }
+    6.25%, 25% { opacity: 1; }
+    31.25%, 100% { opacity: 0; }
   }
   @media (prefers-reduced-motion: reduce) {
-    .ciclo { animation: none; }
+    :global(.ciclo) { animation: none; }
   }
 </style>

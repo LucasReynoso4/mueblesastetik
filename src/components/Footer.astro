@@ -13,25 +13,25 @@ const anio = new Date().getFullYear();
       </div>
       <div>
         <p class="mb-4 text-sm font-medium text-white">Productos</p>
-        <ul class="space-y-2.5">
-          {CATEGORIAS.map((c) => <li><a class="hover:text-white" href={`/catalogo?categoria=${c.id}`}>{c.nombre}</a></li>)}
+        <ul class="space-y-0.5">
+          {CATEGORIAS.map((c) => <li><a class="inline-flex min-h-10 items-center hover:text-white" href={`/catalogo?categoria=${c.id}`}>{c.nombre}</a></li>)}
         </ul>
       </div>
       <div>
         <p class="mb-4 text-sm font-medium text-white">Información</p>
-        <ul class="space-y-2.5">
-          <li><a class="hover:text-white" href="/estetica">Para tu salón</a></li>
-          <li><a class="hover:text-white" href="/colores">Telas y colores</a></li>
-          <li><a class="hover:text-white" href="/como-comprar">Cómo comprar</a></li>
-          <li><a class="hover:text-white" href="/como-comprar#preguntas">Preguntas frecuentes</a></li>
+        <ul class="space-y-0.5">
+          <li><a class="inline-flex min-h-10 items-center hover:text-white" href="/estetica">Para tu salón</a></li>
+          <li><a class="inline-flex min-h-10 items-center hover:text-white" href="/colores">Telas y colores</a></li>
+          <li><a class="inline-flex min-h-10 items-center hover:text-white" href="/como-comprar">Cómo comprar</a></li>
+          <li><a class="inline-flex min-h-10 items-center hover:text-white" href="/como-comprar#preguntas">Preguntas frecuentes</a></li>
         </ul>
       </div>
       <div>
         <p class="mb-4 text-sm font-medium text-white">Contacto</p>
-        <ul class="space-y-3">
-          <li><a class="flex items-center gap-2.5 hover:text-white" href={linkWhatsApp(MENSAJE_GENERAL)} target="_blank" rel="noopener"><Icono nombre="whatsapp" class="size-4" /> {SITIO.whatsappVisible}</a></li>
-          <li><a class="flex items-center gap-2.5 hover:text-white" href={SITIO.instagram} target="_blank" rel="noopener"><Icono nombre="instagram" class="size-4" /> {SITIO.instagramUsuario}</a></li>
-          <li><a class="flex items-center gap-2.5 hover:text-white" href={SITIO.mercadolibre} target="_blank" rel="noopener"><span class="grid size-4 place-items-center rounded-full bg-ml text-[8px] font-bold text-[#2d3277]">ML</span> Tienda en Mercado Libre</a></li>
+        <ul class="space-y-0.5">
+          <li><a class="flex min-h-10 items-center gap-2.5 hover:text-white" href={linkWhatsApp(MENSAJE_GENERAL)} target="_blank" rel="noopener"><Icono nombre="whatsapp" class="size-4" /> {SITIO.whatsappVisible}</a></li>
+          <li><a class="flex min-h-10 items-center gap-2.5 hover:text-white" href={SITIO.instagram} target="_blank" rel="noopener"><Icono nombre="instagram" class="size-4" /> {SITIO.instagramUsuario}</a></li>
+          <li><a class="flex min-h-10 items-center gap-2.5 hover:text-white" href={SITIO.mercadolibre} target="_blank" rel="noopener"><span class="grid size-4 place-items-center rounded-full bg-ml text-[8px] font-bold text-[#2d3277]">ML</span> Tienda en Mercado Libre</a></li>
         </ul>
       </div>
     </div>
