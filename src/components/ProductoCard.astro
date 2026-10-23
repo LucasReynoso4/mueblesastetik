@@ -1,0 +1,47 @@
+---
+import { Picture } from 'astro:assets';
+import type { Producto } from '../data/productos';
+import { formatoPrecio, nombreCategoria, precioDesde } from '../data/productos';
+import { TELAS } from '../data/colores';
+
+interface Props {
+  producto: Producto;
+  prioridad?: boolean;
+}
+const { producto: p, prioridad = false } = Astro.props;
+const colores = TELAS.filter((t) => !p.telas || p.telas.includes(t.id)).flatMap((t) => t.colores);
+const muestra = colores.slice(0, 5);
+const resto = colores.length - muestra.length;
+---
+<article
+  class="group relative"
+  data-producto
+  data-categoria={p.categoria}
+  data-usos={p.usos.join(' ')}
+>
+  <div class="tarjeta elevable relative aspect-[4/5]" style={`view-transition-name: foto-${p.slug}`}>
+    <Picture
+      src={p.fotos[0].imagen}
+      alt={p.nombre}
+      formats={['avif', 'webp']}
+      fallbackFormat="webp"
+      widths={[320, 480, 600]}
+      sizes="(min-width: 1024px) 30vw, 50vw"
+      loading={prioridad ? 'eager' : 'lazy'}
+      class="size-full object-cover transition-transform duration-700 ease-suave group-hover:scale-[1.04]"
+    />
+    <span class="etiqueta absolute top-3 left-3 !px-3 !py-1 !text-xs">{nombreCategoria(p.categoria)}</span>
+  </div>
+  <div class="px-1 pt-3">
+    <h3 class="text-[17px] leading-tight font-semibold tracking-tight sm:text-lg">
+      <a href={`/productos/${p.slug}`} class="after:absolute after:inset-0">{p.nombre}</a>
+    </h3>
+    <div class="mt-2 flex items-center gap-1" aria-label={`${colores.length} colores disponibles`}>
+      {muestra.map((c) => <span class="size-3.5 rounded-full ring-1 ring-tinta/10" style={`background:${c.hex}`}></span>)}
+      {resto > 0 && <span class="ml-1 text-xs text-humo">+{resto}</span>}
+    </div>
+    <p class="mt-2 text-sm">
+      {p.opciones.length > 1 && <span class="text-humo">Desde </span>}<span class="font-semibold">{formatoPrecio(precioDesde(p))}</span>
+    </p>
+  </div>
+</article>

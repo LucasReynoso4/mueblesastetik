@@ -1,0 +1,64 @@
+---
+import Base from '../layouts/Base.astro';
+import Cta from '../components/Cta.astro';
+import { SITIO } from '../data/sitio';
+
+const PASOS = [
+  { t: 'Elegí el modelo', d: 'Recorré el catálogo o mandanos una foto de lo que tenés en mente.' },
+  { t: 'Elegí color y medida', d: 'Te asesoramos con la tela y el color, y adaptamos la medida a tu espacio.' },
+  { t: 'Confirmás el presupuesto', d: 'Te pasamos precio y tiempo de fabricación por WhatsApp, sin compromiso.' },
+  { t: 'Lo fabricamos y te lo enviamos', d: 'Lo hacemos en nuestro taller y lo enviamos a todo el país.' },
+];
+
+const PREGUNTAS = [
+  { p: '¿Puedo pedir un mueble en un color que no está en la página?', r: 'Sí. Trabajamos con más de 30 colores en pana antimanchas y eco-cuero. Escribinos y te mandamos fotos de las telas disponibles.' },
+  { p: '¿Hacen muebles a medida?', r: 'Sí, todos nuestros muebles se pueden adaptar. Pasanos las medidas de tu espacio y te decimos qué se puede hacer.' },
+  { p: '¿Cuánto tarda la fabricación?', r: 'Depende del modelo y de la cantidad. Te confirmamos el tiempo exacto junto con el presupuesto.' },
+  { p: '¿Hacen envíos?', r: 'Sí, enviamos a todo el país. El costo depende del destino y del tamaño del mueble.' },
+  { p: '¿Cómo puedo pagar?', r: `Podés comprar a través de nuestra tienda en Mercado Libre, con todos sus medios de pago y su protección al comprador, o coordinar el pago directamente con nosotros por WhatsApp.` },
+  { p: '¿Hacen equipamiento para locales y salones?', r: 'Sí, es una de nuestras especialidades: mostradores, camillas, sillones de espera y puffs en el color de tu marca.' },
+];
+
+const faq = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: PREGUNTAS.map((q) => ({ '@type': 'Question', name: q.p, acceptedAnswer: { '@type': 'Answer', text: q.r } })),
+};
+---
+<Base titulo="Cómo comprar" descripcion="Cómo pedir tu mueble a medida: elegís modelo, tela y color, te pasamos presupuesto y lo enviamos a todo el país." jsonLd={[faq]}>
+  <section class="mx-auto max-w-7xl px-3 pt-10 pb-16 md:px-5 md:pt-16">
+    <h1 class="titulo px-2">Tu mueble, <em>en cuatro pasos</em></h1>
+    <ol class="mt-10 grid gap-3 md:grid-cols-4">
+      {PASOS.map((s, i) => (
+        <li class:list={['reveal rounded-[var(--radius-tarjeta)] p-7', i === 3 ? 'bg-tinta text-white' : 'bg-white']}>
+          <span class:list={['grid size-12 place-items-center rounded-full text-lg font-semibold', i === 3 ? 'bg-oro text-tinta' : 'bg-papel']}>{i + 1}</span>
+          <p class="mt-8 text-2xl font-semibold tracking-tight">{s.t}</p>
+          <p class:list={['mt-2 leading-relaxed', i === 3 ? 'text-white/70' : 'text-humo']}>{s.d}</p>
+        </li>
+      ))}
+    </ol>
+  </section>
+
+  <section id="preguntas" class="mx-auto max-w-7xl scroll-mt-24 px-3 pb-12 md:px-5">
+    <div class="grid gap-8 rounded-[var(--radius-tarjeta)] bg-white p-6 md:grid-cols-[1fr_1.6fr] md:p-12">
+      <div>
+        <h2 class="titulo !text-4xl md:!text-5xl">Preguntas <em>frecuentes</em></h2>
+        <p class="mt-4 text-humo">
+          ¿Preferís comprar con la protección de Mercado Libre? <a href={SITIO.mercadolibre} target="_blank" rel="noopener" class="font-medium text-tinta underline underline-offset-4 hover:text-acento">Visitá nuestra tienda</a>.
+        </p>
+      </div>
+      <div class="space-y-2">
+        {PREGUNTAS.map((q) => (
+          <details class="group rounded-3xl bg-papel px-5 open:bg-acento-suave">
+            <summary class="flex min-h-16 cursor-pointer list-none items-center justify-between gap-6 py-4 text-lg font-semibold tracking-tight [&::-webkit-details-marker]:hidden">
+              {q.p}
+              <span class="grid size-9 shrink-0 place-items-center rounded-full bg-white text-xl transition-transform group-open:rotate-45" aria-hidden="true">+</span>
+            </summary>
+            <p class="pr-10 pb-5 leading-relaxed text-humo">{q.r}</p>
+          </details>
+        ))}
+      </div>
+    </div>
+  </section>
+  <Cta />
+</Base>

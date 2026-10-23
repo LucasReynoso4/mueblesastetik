@@ -1,0 +1,40 @@
+---
+import Icono from './Icono.astro';
+import { SITIO, linkWhatsApp, MENSAJE_GENERAL } from '../data/sitio';
+import { CATEGORIAS } from '../data/productos';
+const anio = new Date().getFullYear();
+---
+<footer class="mx-auto max-w-7xl px-3 pb-3 md:px-5 md:pb-5">
+  <div class="overflow-hidden rounded-[var(--radius-tarjeta)] bg-tinta text-white/75">
+    <div class="grid gap-12 px-6 py-14 md:grid-cols-[1.5fr_1fr_1fr_1.2fr] md:px-12">
+      <div>
+        <p class="text-4xl font-semibold tracking-tight text-white">Astetik<span class="text-oro">.</span></p>
+        <p class="mt-4 max-w-xs leading-relaxed">Muebles tapizados a medida, hechos en nuestro taller. Envíos a todo el país.</p>
+      </div>
+      <div>
+        <p class="mb-4 text-sm font-medium text-white">Productos</p>
+        <ul class="space-y-2.5">
+          {CATEGORIAS.map((c) => <li><a class="hover:text-white" href={`/catalogo?categoria=${c.id}`}>{c.nombre}</a></li>)}
+        </ul>
+      </div>
+      <div>
+        <p class="mb-4 text-sm font-medium text-white">Información</p>
+        <ul class="space-y-2.5">
+          <li><a class="hover:text-white" href="/estetica">Para tu salón</a></li>
+          <li><a class="hover:text-white" href="/colores">Telas y colores</a></li>
+          <li><a class="hover:text-white" href="/como-comprar">Cómo comprar</a></li>
+          <li><a class="hover:text-white" href="/como-comprar#preguntas">Preguntas frecuentes</a></li>
+        </ul>
+      </div>
+      <div>
+        <p class="mb-4 text-sm font-medium text-white">Contacto</p>
+        <ul class="space-y-3">
+          <li><a class="flex items-center gap-2.5 hover:text-white" href={linkWhatsApp(MENSAJE_GENERAL)} target="_blank" rel="noopener"><Icono nombre="whatsapp" class="size-4" /> {SITIO.whatsappVisible}</a></li>
+          <li><a class="flex items-center gap-2.5 hover:text-white" href={SITIO.instagram} target="_blank" rel="noopener"><Icono nombre="instagram" class="size-4" /> {SITIO.instagramUsuario}</a></li>
+          <li><a class="flex items-center gap-2.5 hover:text-white" href={SITIO.mercadolibre} target="_blank" rel="noopener"><span class="grid size-4 place-items-center rounded-full bg-ml text-[8px] font-bold text-[#2d3277]">ML</span> Tienda en Mercado Libre</a></li>
+        </ul>
+      </div>
+    </div>
+    <p class="border-t border-white/10 px-6 py-5 text-sm text-white/50 md:px-12">© {anio} Muebles Astetik · {SITIO.ubicacion}</p>
+  </div>
+</footer>

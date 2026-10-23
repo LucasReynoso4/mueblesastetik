@@ -1,0 +1,27 @@
+---
+// En el celular: barra fija abajo con las dos acciones principales.
+// En la compu: botón flotante de WhatsApp.
+import Icono from './Icono.astro';
+import { linkWhatsApp, MENSAJE_GENERAL } from '../data/sitio';
+---
+<div class="fixed inset-x-3 bottom-3 z-40 flex gap-2 rounded-full bg-tinta/95 p-1.5 shadow-2xl backdrop-blur md:hidden" style="padding-bottom: max(0.375rem, env(safe-area-inset-bottom));">
+  <button type="button" data-abrir-lista class="btn relative flex-1 text-white hover:bg-white/10">
+    <Icono nombre="lista" class="size-5" /> Mi lista
+    <span data-contador-lista class="hidden min-w-5 rounded-full bg-oro px-1.5 text-tinta text-center text-[11px] leading-5 font-semibold">0</span>
+  </button>
+  <a href={linkWhatsApp(MENSAJE_GENERAL)} target="_blank" rel="noopener" class="btn-wa flex-[1.4]">
+    <Icono nombre="whatsapp" class="size-5" /> Consultar
+  </a>
+</div>
+<div class="h-20 md:hidden" aria-hidden="true"></div>
+
+<a
+  href={linkWhatsApp(MENSAJE_GENERAL)}
+  target="_blank"
+  rel="noopener"
+  aria-label="Escribinos por WhatsApp"
+  class="group fixed right-6 bottom-6 z-40 hidden items-center rounded-full bg-wa text-white shadow-[0_12px_32px_-8px_rgba(31,190,85,0.8)] transition hover:-translate-y-0.5 hover:bg-wa-oscuro md:flex"
+>
+  <span class="grid size-14 place-items-center"><Icono nombre="whatsapp" class="size-7" /></span>
+  <span class="max-w-0 overflow-hidden font-medium whitespace-nowrap transition-all duration-500 group-hover:max-w-40 group-hover:pr-5">Consultanos</span>
+</a>

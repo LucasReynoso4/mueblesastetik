@@ -1,0 +1,191 @@
+---
+import { Image, Picture } from 'astro:assets';
+import Base from '../layouts/Base.astro';
+import ProductoCard from '../components/ProductoCard.astro';
+import Cta from '../components/Cta.astro';
+import Icono from '../components/Icono.astro';
+import { PRODUCTOS, CATEGORIAS, productoPorSlug } from '../data/productos';
+import { TELAS, CANTIDAD_COLORES } from '../data/colores';
+import { SITIO, CIFRAS, linkWhatsApp, MENSAJE_GENERAL } from '../data/sitio';
+
+const destacados = PRODUCTOS.filter((p) => p.destacado).slice(0, 6);
+const categorias = CATEGORIAS.map((c) => {
+  const productos = PRODUCTOS.filter((p) => p.categoria === c.id);
+  return { ...c, cantidad: productos.length, imagen: productos[0]?.fotos[0].imagen };
+}).filter((c) => c.cantidad > 0);
+
+const mostrador = productoPorSlug('mostrador-capitone')!;
+const camilla = productoPorSlug('camilla-lashista')!;
+
+const flor = productoPorSlug('respaldo-flor')!;
+const colorFlor = ['fucsia', 'azul-francia', 'verde-esmeralda', 'amarillo'].map((c) => flor.fotos.find((f) => f.color === c)!);
+const mosaico = [productoPorSlug('sillon-labios')!, productoPorSlug('puff-capitone-grande')!];
+
+const DESFILE = ['Hecho a medida', 'Más de 30 colores', 'Envíos a todo el país', 'Fabricación propia', 'Pana y eco-cuero', 'Equipamiento para salones'];
+---
+<Base>
+  <!-- PORTADA: texto + mosaico de fotos reales en su tamaño original (nada estirado) -->
+  <section class="mx-auto grid max-w-7xl gap-3 px-3 pt-4 md:px-5 md:pt-8 lg:min-h-[640px] lg:grid-cols-12">
+    <div class="relative isolate flex flex-col justify-end overflow-hidden rounded-[var(--radius-tarjeta)] bg-tinta p-6 pb-8 text-white md:p-12 lg:col-span-5 lg:p-14">
+      <div class="absolute -top-24 -right-24 -z-10 size-72 rounded-full bg-oro/25 blur-3xl"></div>
+      <span class="entrada etiqueta self-start !bg-white/10 !text-white ring-1 ring-white/20" style="--d:0"><span class="size-2 rounded-full bg-oro"></span> Más de 1000 ventas en Mercado Libre</span>
+      <h1 class="entrada mt-5 text-[2.6rem] leading-[1.02] font-bold tracking-[-0.035em] text-balance sm:text-6xl" style="--d:1">
+        Muebles que <em class="font-serif text-[1.08em] font-normal tracking-normal text-oro italic">enamoran</em>, hechos a tu medida
+      </h1>
+      <p class="entrada mt-5 max-w-md text-lg leading-relaxed text-white/80" style="--d:2">
+        Respaldos, puffs, sillones, mostradores y camillas capitoné. Elegís el modelo, la medida y el color: nosotros lo fabricamos.
+      </p>
+      <div class="entrada mt-8 flex flex-col gap-3 sm:flex-row" style="--d:3">
+        <a href="/catalogo" class="btn group bg-oro text-tinta hover:bg-oro-claro">Ver catálogo <Icono nombre="flecha" class="size-4 transition-transform group-hover:translate-x-1" /></a>
+        <a href={linkWhatsApp(MENSAJE_GENERAL)} target="_blank" rel="noopener" class="btn bg-white/10 text-white ring-1 ring-white/25 hover:bg-white/20">
+          <Icono nombre="whatsapp" class="size-5" /> Pedir presupuesto
+        </a>
+      </div>
+    </div>
+
+    <div class="grid h-[420px] grid-cols-2 grid-rows-2 gap-3 sm:h-[520px] lg:col-span-7 lg:h-auto">
+      <a href={`/productos/${flor.slug}`} class="tarjeta group relative row-span-2" aria-label={`${flor.nombre}: disponible en ${colorFlor.length} colores`}>
+        {colorFlor.map((f, i) => (
+          <Picture src={f.imagen} alt="" formats={['avif', 'webp']} fallbackFormat="webp" widths={[400, 600, 800]} sizes="(min-width: 1024px) 30vw, 50vw" loading={i === 0 ? 'eager' : 'lazy'} fetchpriority={i === 0 ? 'high' : undefined} class="ciclo absolute inset-0 size-full object-cover" style={`--i:${i}`} />
+        ))}
+        <span class="etiqueta absolute bottom-3 left-3">{flor.nombre} · {CANTIDAD_COLORES} colores</span>
+      </a>
+      {mosaico.map((p) => (
+        <a href={`/productos/${p.slug}`} class="tarjeta group relative">
+          <Picture src={p.fotos[0].imagen} alt={p.nombre} formats={['avif', 'webp']} fallbackFormat="webp" widths={[400, 600]} sizes="(min-width: 1024px) 30vw, 50vw" loading="eager" class="size-full object-cover transition-transform duration-700 ease-suave group-hover:scale-[1.04]" />
+          <span class="etiqueta absolute bottom-3 left-3 !text-xs">{p.nombre}</span>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <!-- DESFILE DE BENEFICIOS -->
+  <div class="mt-6 overflow-hidden py-2 md:mt-8" aria-label="Beneficios">
+    <ul class="flex w-max animate-[desfile_40s_linear_infinite] gap-10 text-lg font-semibold tracking-tight text-humo motion-reduce:animate-none">
+      {[...DESFILE, ...DESFILE].map((d, i) => (
+        <li class="flex items-center gap-10" aria-hidden={i >= DESFILE.length ? 'true' : undefined}>{d}<span class="text-oro" aria-hidden="true">✦</span></li>
+      ))}
+    </ul>
+  </div>
+
+  <!-- CATEGORÍAS -->
+  <section class="mx-auto max-w-7xl px-3 py-16 md:px-5 md:py-24">
+    <div class="reveal flex items-end justify-between gap-6 px-2">
+      <h2 class="titulo">Elegí por <em>categoría</em></h2>
+      <a href="/catalogo" class="hidden items-center gap-2 font-medium hover:text-acento md:inline-flex">Ver todo <Icono nombre="flecha" class="size-4" /></a>
+    </div>
+    <ul class="escalonado carrusel mt-8 -mx-3 scroll-px-3 px-3 md:mx-0 md:grid md:grid-cols-5 md:px-0">
+      {categorias.map((c) => (
+        <li class="group relative w-[44vw] sm:w-60 md:w-auto">
+          <div class="tarjeta elevable aspect-[3/4]">
+            {c.imagen && <Image src={c.imagen} alt="" widths={[300, 500]} sizes="(min-width: 768px) 20vw, 45vw" class="size-full object-cover transition-transform duration-700 ease-suave group-hover:scale-[1.05]" />}
+          </div>
+          <a href={`/catalogo?categoria=${c.id}`} class="mt-3 flex items-center justify-between px-1 after:absolute after:inset-0">
+            <span class="text-lg font-semibold tracking-tight">{c.nombre}</span>
+            <span class="text-sm text-humo">{c.cantidad}</span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  <!-- DESTACADOS -->
+  <section class="mx-auto max-w-7xl px-3 md:px-5">
+    <div class="md:rounded-[var(--radius-tarjeta)] md:bg-nube md:px-10 md:py-20">
+      <div class="reveal flex flex-col justify-between gap-4 px-1 md:flex-row md:items-end">
+        <h2 class="titulo">Los más <em>pedidos</em></h2>
+        <p class="max-w-sm text-humo">Cada modelo se hace en la tela y el color que quieras. Las fotos son solo un ejemplo.</p>
+      </div>
+      <div class="escalonado mt-8 grid grid-cols-2 gap-x-3 gap-y-8 md:mt-10 md:gap-x-5 lg:grid-cols-3">
+        {destacados.map((p) => <div><ProductoCard producto={p} /></div>)}
+      </div>
+      <div class="mt-12 text-center">
+        <a href="/catalogo" class="btn-primario">Ver los {PRODUCTOS.length} modelos <Icono nombre="flecha" class="size-4" /></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- COLORES + CIFRAS -->
+  <section class="mx-auto max-w-7xl px-3 pt-16 md:px-5 md:pt-24">
+    <div class="reveal relative overflow-hidden rounded-[var(--radius-tarjeta)] bg-tinta p-6 text-white md:p-12">
+      <div class="pointer-events-none absolute -right-32 -bottom-32 size-96 rounded-full bg-[radial-gradient(circle,rgba(201,168,101,0.3),transparent_65%)]"></div>
+      <div class="relative grid gap-10 lg:grid-cols-[1fr_1.1fr] lg:items-center">
+        <div>
+          <h2 class="titulo max-w-lg [&_em]:!text-oro">Cualquier modelo, <em>en tu color</em></h2>
+          <p class="mt-4 max-w-md text-white/70">Todos los modelos se fabrican en pana antimanchas o eco-cuero, en el color que elijas.</p>
+          <a href="/colores" class="btn group mt-8 bg-oro text-tinta hover:bg-oro-claro">Ver telas y colores <Icono nombre="flecha" class="size-4 transition-transform group-hover:translate-x-1" /></a>
+        </div>
+        <div class="space-y-6">
+          {TELAS.map((t) => (
+            <div>
+              <p class="mb-3 text-sm text-white/70">{t.nombre}</p>
+              <ul class="escalonado flex flex-wrap gap-2.5">
+                {t.colores.map((c) => (
+                  <li title={c.nombre} class="size-10 rounded-full ring-1 ring-white/20 transition-transform duration-300 hover:scale-110 md:size-12" style={`background:${c.hex}`}><span class="sr-only">{c.nombre}</span></li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+      </div>
+      <dl class="escalonado relative mt-10 grid grid-cols-2 rounded-2xl border border-white/10 md:mt-12 md:grid-cols-4">
+        {CIFRAS.map((c) => (
+          <div class="flex flex-col-reverse gap-1 border-white/10 p-5 even:border-l md:p-6 md:not-first:border-l [&:nth-child(n+3)]:border-t md:[&:nth-child(n+3)]:border-t-0">
+            <dt class="text-sm text-white/60">{c.etiqueta}</dt>
+            <dd class="text-3xl font-bold tracking-tight text-oro md:text-4xl" data-contar={c.valor.match(/\d+/)?.[0]}>{c.valor}</dd>
+          </div>
+        ))}
+      </dl>
+    </div>
+  </section>
+
+  <!-- SALONES + CÓMO COMPRAR -->
+  <section class="mx-auto max-w-7xl px-3 pt-3 pb-16 md:px-5 md:pb-24">
+    <div class="escalonado grid gap-3 md:grid-cols-2">
+      {[
+        { href: '/estetica', img: mostrador.fotos[0].imagen, alt: 'Recepción con mostrador capitoné fucsia', titulo: 'Equipá tu', enfasis: 'salón', texto: 'Mostradores, camillas y sillones de espera en el color de tu marca.' },
+        { href: '/como-comprar', img: camilla.fotos[0].imagen, alt: '', titulo: 'Cómo', enfasis: 'comprar', texto: 'Elegís, te pasamos presupuesto por WhatsApp, lo fabricamos y te lo enviamos.' },
+      ].map((b) => (
+        <a href={b.href} class="group elevable grid grid-cols-[7.5rem_1fr] overflow-hidden rounded-[var(--radius-tarjeta)] bg-white md:grid-cols-1">
+          <div class="overflow-hidden">
+            <Image src={b.img} alt={b.alt} widths={[240, 480, 640]} sizes="(min-width: 768px) 50vw, 120px" class="size-full object-cover transition-transform duration-700 ease-suave group-hover:scale-[1.04] md:aspect-[16/9] md:h-auto" />
+          </div>
+          <div class="flex items-center justify-between gap-4 p-5 md:p-8">
+            <div>
+              <h2 class="text-xl font-bold tracking-tight md:text-3xl">{b.titulo} <em class="font-serif text-[1.08em] font-normal text-acento italic">{b.enfasis}</em></h2>
+              <p class="mt-1.5 text-sm text-humo md:mt-2 md:text-base">{b.texto}</p>
+            </div>
+            <span class="hidden size-12 shrink-0 place-items-center rounded-full bg-tinta text-white transition group-hover:bg-acento md:grid"><Icono nombre="flecha" class="size-5 transition-transform group-hover:translate-x-0.5" /></span>
+          </div>
+        </a>
+      ))}
+    </div>
+
+    <div class="reveal mt-3 flex flex-col items-start justify-between gap-5 rounded-[var(--radius-tarjeta)] bg-white p-6 md:flex-row md:items-center md:px-10">
+      <p class="text-xl font-medium tracking-tight md:text-2xl">¿Preferís comprar por Mercado Libre? <span class="text-humo">También estamos ahí.</span></p>
+      <a href={SITIO.mercadolibre} target="_blank" rel="noopener" class="btn-ml shrink-0">Ver tienda en Mercado Libre</a>
+    </div>
+  </section>
+
+  <Cta />
+</Base>
+
+<style>
+  /* La foto grande de la portada va pasando por distintos colores del mismo respaldo */
+  .ciclo {
+    opacity: 0;
+    animation: ciclo 16s linear infinite backwards;
+    animation-delay: calc(var(--i) * 4s - 1s);
+  }
+  .ciclo:first-child {
+    opacity: 1;
+  }
+  @keyframes ciclo {
+    0% { opacity: 0; }
+    5%, 25% { opacity: 1; }
+    30%, 100% { opacity: 0; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .ciclo { animation: none; }
+  }
+</style>
