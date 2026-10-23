@@ -15,8 +15,8 @@ export const SITIO = {
 };
 
 // Descuento por comprar directo (transferencia o efectivo) sobre el precio de Mercado Libre.
-// 0.10 = 10% menos. Con 0 se muestra solo el precio de Mercado Libre.
-export const DESCUENTO_DIRECTO = 0.1;
+// 0.23 = 23% menos (lo que el taller cobra por afuera: ~200 por cada 260 de ML). Con 0 se muestra solo el precio de Mercado Libre.
+export const DESCUENTO_DIRECTO = 0.23;
 
 // Cifras que se muestran en la página. Revisar que sigan siendo ciertas.
 export const CIFRAS = [
