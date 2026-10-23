@@ -71,19 +71,36 @@ const negocio = {
     <ListaConsulta />
 
     <script>
+      const quieto = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      // Números que cuentan desde 0 (ej. "+1000")
+      function contar(el: HTMLElement) {
+        if (el.dataset.contado) return;
+        el.dataset.contado = '1';
+        const fin = Number(el.dataset.contar);
+        const [antes, despues = ''] = (el.textContent ?? '').split(String(fin));
+        const t0 = performance.now();
+        const paso = (t: number) => {
+          const k = Math.min((t - t0) / 1400, 1);
+          el.textContent = `${antes}${Math.round(fin * (1 - Math.pow(1 - k, 3)))}${despues}`;
+          if (k < 1) requestAnimationFrame(paso);
+        };
+        requestAnimationFrame(paso);
+      }
+
       // Animaciones de entrada al hacer scroll
       const obs = new IntersectionObserver(
         (entradas) => {
           for (const e of entradas) {
-            if (e.isIntersecting) {
-              e.target.classList.add('visible');
-              obs.unobserve(e.target);
-            }
+            if (!e.isIntersecting) continue;
+            e.target.classList.add('visible');
+            if (!quieto) e.target.querySelectorAll<HTMLElement>('[data-contar]').forEach(contar);
+            obs.unobserve(e.target);
           }
         },
         { threshold: 0.12, rootMargin: '0px 0px -40px 0px' },
       );
-      document.querySelectorAll('.reveal').forEach((el) => obs.observe(el));
+      document.querySelectorAll('.reveal, .escalonado').forEach((el) => obs.observe(el));
     </script>
   </body>
 </html>

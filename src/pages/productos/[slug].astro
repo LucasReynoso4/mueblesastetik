@@ -60,7 +60,7 @@ const jsonLd = [
 
   <article class="mx-auto grid max-w-7xl gap-3 px-3 pt-4 pb-16 md:grid-cols-2 md:px-5 md:pb-24" data-ficha data-nombre={p.nombre}>
     <div class="md:sticky md:top-24 md:self-start">
-      <div class="tarjeta relative">
+      <div class="tarjeta relative" style={`view-transition-name: foto-${p.slug}`}>
         <Picture
           src={p.imagenes[0]}
           alt={`${p.nombre} en ${eleccionInicial}`}
@@ -85,7 +85,7 @@ const jsonLd = [
       )}
     </div>
 
-    <div class="rounded-[var(--radius-tarjeta)] bg-white p-6 md:p-10">
+    <div class="entrada rounded-[var(--radius-tarjeta)] bg-white p-6 md:p-10" style="--d:1">
       <span class="etiqueta !bg-papel">{nombreCategoria(p.categoria)}</span>
       <h1 class="mt-4 text-4xl leading-[1] font-semibold tracking-[-0.035em] md:text-5xl">{p.nombre}</h1>
       <p class="mt-4 text-lg leading-relaxed text-humo">{p.descripcion}</p>
@@ -170,7 +170,7 @@ const jsonLd = [
   <section class="mx-auto max-w-7xl px-3 pb-12 md:px-5">
     <div class="rounded-[var(--radius-tarjeta)] bg-nube px-4 py-14 md:px-10">
       <h2 class="titulo px-1 !text-4xl md:!text-5xl">También te puede <em>gustar</em></h2>
-      <div class="mt-8 grid grid-cols-2 gap-x-3 gap-y-8 md:gap-x-5 lg:grid-cols-3">
+      <div class="escalonado mt-8 grid grid-cols-2 gap-x-3 gap-y-8 md:gap-x-5 lg:grid-cols-3">
         {relacionados.map((o) => <ProductoCard producto={o} />)}
       </div>
     </div>

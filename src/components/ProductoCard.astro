@@ -19,7 +19,7 @@ const resto = colores.length - muestra.length;
   data-categoria={p.categoria}
   data-usos={p.usos.join(' ')}
 >
-  <div class="tarjeta relative aspect-[4/5]">
+  <div class="tarjeta elevable relative aspect-[4/5]" style={`view-transition-name: foto-${p.slug}`}>
     <Picture
       src={p.imagenes[0]}
       alt={p.nombre}

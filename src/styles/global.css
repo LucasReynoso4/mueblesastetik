@@ -1,9 +1,9 @@
-@import '@fontsource-variable/bricolage-grotesque';
+@import '@fontsource-variable/manrope';
 @import '@fontsource/instrument-serif/400-italic.css';
 @import 'tailwindcss';
 
 @theme {
-  --font-sans: 'Bricolage Grotesque Variable', system-ui, sans-serif;
+  --font-sans: 'Manrope Variable', system-ui, sans-serif;
   --font-serif: 'Instrument Serif', Georgia, serif;
 
   --color-papel: #f4f0ea;
@@ -22,6 +22,15 @@
 
   --radius-tarjeta: 1.75rem;
   --ease-suave: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Transiciones suaves entre páginas (Chrome, Edge y Safari recientes) */
+@view-transition {
+  navigation: auto;
+}
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.35s;
 }
 
 @layer base {
@@ -56,9 +65,9 @@
 }
 /* Título grande: sans pesada con acento en serif itálica */
 @utility titulo {
-  @apply font-sans text-[2.5rem] leading-[0.95] font-semibold tracking-[-0.035em] text-balance md:text-6xl lg:text-7xl;
+  @apply font-sans text-[2.25rem] leading-[1.05] font-bold tracking-[-0.03em] text-balance md:text-5xl lg:text-6xl;
   & em {
-    @apply font-serif font-normal tracking-[-0.01em] text-acento italic;
+    @apply font-serif text-[1.08em] font-normal tracking-normal text-acento italic;
   }
 }
 @utility btn {
@@ -79,6 +88,10 @@
 @utility tarjeta {
   @apply overflow-hidden rounded-[var(--radius-tarjeta)] bg-white;
 }
+/* Tarjeta que se eleva al pasar el mouse */
+@utility elevable {
+  @apply transition duration-500 ease-suave hover:-translate-y-1 hover:shadow-[0_24px_48px_-24px_rgba(21,19,18,0.35)];
+}
 /* Fila con scroll horizontal (carruseles en el celular) */
 @utility carrusel {
   @apply flex snap-x snap-mandatory gap-3 overflow-x-auto overscroll-x-contain [scrollbar-width:none] [&::-webkit-scrollbar]:hidden;
@@ -97,8 +110,40 @@
   opacity: 1;
   transform: none;
 }
+/* Grupo: los hijos aparecen uno detrás de otro */
+.js .escalonado > * {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.7s var(--ease-suave), transform 0.7s var(--ease-suave);
+}
+.js .escalonado.visible > * {
+  opacity: 1;
+  transform: none;
+}
+.escalonado > *:nth-child(2) { transition-delay: 80ms; }
+.escalonado > *:nth-child(3) { transition-delay: 160ms; }
+.escalonado > *:nth-child(4) { transition-delay: 240ms; }
+.escalonado > *:nth-child(5) { transition-delay: 320ms; }
+.escalonado > *:nth-child(6) { transition-delay: 400ms; }
+.escalonado > *:nth-child(n+7) { transition-delay: 480ms; }
+/* Los bloques de la portada entran al cargar */
+.entrada {
+  animation: entrada 0.9s var(--ease-suave) both;
+  animation-delay: calc(var(--d, 0) * 110ms + 100ms);
+}
+.zoom-entrada {
+  animation: zoom-entrada 1.6s var(--ease-suave) both;
+}
 @media (prefers-reduced-motion: reduce) {
-  .js .reveal { opacity: 1; transform: none; }
+  .js .reveal, .js .escalonado > * { opacity: 1; transform: none; }
+  .entrada, .zoom-entrada { animation: none; }
+}
+
+@keyframes entrada {
+  from { opacity: 0; transform: translateY(28px); }
+}
+@keyframes zoom-entrada {
+  from { transform: scale(1.12); }
 }
 
 @keyframes desfile {

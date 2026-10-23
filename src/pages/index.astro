@@ -15,7 +15,6 @@ const categorias = CATEGORIAS.map((c) => {
   return { ...c, cantidad: productos.length, imagen: productos[0]?.imagenes[0] };
 }).filter((c) => c.cantidad > 0);
 
-const mosaico = ['sillon-labios', 'puff-redondo-capitone'].map((s) => productoPorSlug(s)!);
 const mostrador = productoPorSlug('mostrador-capitone')!;
 const camilla = productoPorSlug('camilla-capitone')!;
 
@@ -23,44 +22,31 @@ const DESFILE = ['Hecho a medida', 'Más de 30 colores', 'Envíos a todo el paí
 ---
 <Base>
   <!-- PORTADA -->
-  <section class="mx-auto max-w-7xl px-3 pt-6 md:px-5 md:pt-10">
-    <div class="grid gap-3 lg:grid-cols-[1.1fr_1fr]">
-      <div class="flex flex-col justify-between rounded-[var(--radius-tarjeta)] bg-white p-6 md:p-10 lg:p-12">
-        <div>
-          <span class="etiqueta !bg-papel"><span class="size-2 rounded-full bg-wa"></span> Más de 1000 ventas en Mercado Libre</span>
-          <h1 class="mt-6 text-[3rem] leading-[0.92] font-semibold tracking-[-0.045em] text-balance sm:text-7xl lg:text-[5.5rem]">
-            Muebles que <em class="font-serif font-normal tracking-[-0.01em] text-acento italic">enamoran</em>, hechos a tu medida
-          </h1>
-          <p class="mt-6 max-w-md text-lg leading-relaxed text-humo">
-            Sillones, puffs, mostradores, respaldos y camillas capitoné. Elegís el modelo, la tela y el color: nosotros lo fabricamos.
-          </p>
-        </div>
-        <div class="mt-10 flex flex-col gap-3 sm:flex-row">
-          <a href="/catalogo" class="btn-primario">Ver catálogo <Icono nombre="flecha" class="size-4" /></a>
-          <a href={linkWhatsApp(MENSAJE_GENERAL)} target="_blank" rel="noopener" class="btn-claro">
-            <Icono nombre="whatsapp" class="size-5 text-wa" /> Pedir presupuesto
+  <section class="mx-auto max-w-7xl px-3 pt-4 md:px-5 md:pt-8">
+    <div class="relative isolate flex min-h-[calc(100svh-11rem)] flex-col justify-end overflow-hidden rounded-[var(--radius-tarjeta)] bg-tinta text-white md:min-h-[640px] lg:justify-center">
+      <Picture src={hero} alt="Sillones de relax capitoné en un spa" formats={['avif', 'webp']} widths={[640, 1024, 1600]} sizes="(min-width: 1280px) 1240px, 100vw" loading="eager" fetchpriority="high" class="zoom-entrada absolute inset-0 -z-10 size-full object-cover" />
+      <div class="absolute inset-0 -z-10 bg-gradient-to-t from-tinta via-tinta/70 to-tinta/10 lg:bg-gradient-to-r lg:from-tinta/95 lg:via-tinta/60 lg:to-transparent"></div>
+      <div class="p-6 pb-8 md:p-12 lg:max-w-2xl lg:p-16">
+        <span class="entrada etiqueta !bg-white/10 !text-white ring-1 ring-white/20 backdrop-blur" style="--d:0"><span class="size-2 rounded-full bg-oro"></span> Más de 1000 ventas en Mercado Libre</span>
+        <h1 class="entrada mt-5 text-[2.6rem] leading-[1.02] font-bold tracking-[-0.035em] text-balance sm:text-6xl lg:text-7xl" style="--d:1">
+          Muebles que <em class="font-serif text-[1.08em] font-normal tracking-normal text-oro italic">enamoran</em>, hechos a tu medida
+        </h1>
+        <p class="entrada mt-5 max-w-md text-lg leading-relaxed text-white/80" style="--d:2">
+          Sillones, puffs, mostradores, respaldos y camillas capitoné. Elegís el modelo, la tela y el color: nosotros lo fabricamos.
+        </p>
+        <div class="entrada mt-8 flex flex-col gap-3 sm:flex-row" style="--d:3">
+          <a href="/catalogo" class="btn group bg-oro text-tinta hover:bg-oro-claro">Ver catálogo <Icono nombre="flecha" class="size-4 transition-transform group-hover:translate-x-1" /></a>
+          <a href={linkWhatsApp(MENSAJE_GENERAL)} target="_blank" rel="noopener" class="btn bg-white/10 text-white ring-1 ring-white/25 backdrop-blur hover:bg-white/20">
+            <Icono nombre="whatsapp" class="size-5" /> Pedir presupuesto
           </a>
         </div>
-      </div>
-
-      <div class="grid grid-cols-2 gap-3">
-        <a href="/estetica" class="group tarjeta relative col-span-2 aspect-[16/10] bg-tinta">
-          <Picture src={hero} alt="Sillones de relax capitoné en un spa" formats={['avif', 'webp']} widths={[640, 1024]} sizes="(min-width: 1024px) 45vw, 100vw" loading="eager" fetchpriority="high" class="size-full object-cover opacity-90 transition-transform duration-700 ease-suave group-hover:scale-[1.03]" />
-          <span class="etiqueta absolute bottom-4 left-4">Para tu salón <Icono nombre="flecha" class="size-4" /></span>
-        </a>
-        {mosaico.map((p) => (
-          <a href={`/productos/${p.slug}`} class="group tarjeta relative aspect-square">
-            <Picture src={p.imagenes[0]} alt={p.nombre} formats={['avif', 'webp']} widths={[320, 480]} sizes="(min-width: 1024px) 22vw, 50vw" loading="eager" class="size-full object-cover transition-transform duration-700 ease-suave group-hover:scale-[1.04]" />
-            <span class="etiqueta absolute bottom-3 left-3 !text-xs">{p.nombre}</span>
-          </a>
-        ))}
       </div>
     </div>
   </section>
 
   <!-- DESFILE DE BENEFICIOS -->
-  <div class="mt-3 overflow-hidden border-y border-linea bg-nube py-4" aria-label="Beneficios">
-    <ul class="flex w-max animate-[desfile_40s_linear_infinite] gap-10 text-lg font-medium tracking-tight motion-reduce:animate-none">
+  <div class="mt-6 overflow-hidden py-2 md:mt-8" aria-label="Beneficios">
+    <ul class="flex w-max animate-[desfile_40s_linear_infinite] gap-10 text-lg font-semibold tracking-tight text-humo motion-reduce:animate-none">
       {[...DESFILE, ...DESFILE].map((d, i) => (
         <li class="flex items-center gap-10" aria-hidden={i >= DESFILE.length ? 'true' : undefined}>{d}<span class="text-oro" aria-hidden="true">✦</span></li>
       ))}
@@ -68,15 +54,15 @@ const DESFILE = ['Hecho a medida', 'Más de 30 colores', 'Envíos a todo el paí
   </div>
 
   <!-- CATEGORÍAS -->
-  <section class="mx-auto max-w-7xl px-3 py-20 md:px-5 md:py-28">
+  <section class="mx-auto max-w-7xl px-3 py-16 md:px-5 md:py-24">
     <div class="reveal flex items-end justify-between gap-6 px-2">
       <h2 class="titulo">Elegí por <em>categoría</em></h2>
       <a href="/catalogo" class="hidden items-center gap-2 font-medium hover:text-acento md:inline-flex">Ver todo <Icono nombre="flecha" class="size-4" /></a>
     </div>
-    <ul class="carrusel mt-10 -mx-3 px-3 md:mx-0 md:grid md:grid-cols-5 md:px-0">
+    <ul class="escalonado carrusel mt-8 -mx-3 scroll-px-3 px-3 md:mx-0 md:grid md:grid-cols-5 md:px-0">
       {categorias.map((c) => (
         <li class="group relative w-[44vw] sm:w-60 md:w-auto">
-          <div class="tarjeta aspect-[3/4]">
+          <div class="tarjeta elevable aspect-[3/4]">
             {c.imagen && <Image src={c.imagen} alt="" widths={[300, 500]} sizes="(min-width: 768px) 20vw, 45vw" class="size-full object-cover transition-transform duration-700 ease-suave group-hover:scale-[1.05]" />}
           </div>
           <a href={`/catalogo?categoria=${c.id}`} class="mt-3 flex items-center justify-between px-1 after:absolute after:inset-0">
@@ -90,13 +76,13 @@ const DESFILE = ['Hecho a medida', 'Más de 30 colores', 'Envíos a todo el paí
 
   <!-- DESTACADOS -->
   <section class="mx-auto max-w-7xl px-3 md:px-5">
-    <div class="rounded-[var(--radius-tarjeta)] bg-nube px-4 py-14 md:px-10 md:py-20">
+    <div class="md:rounded-[var(--radius-tarjeta)] md:bg-nube md:px-10 md:py-20">
       <div class="reveal flex flex-col justify-between gap-4 px-1 md:flex-row md:items-end">
         <h2 class="titulo">Los más <em>pedidos</em></h2>
         <p class="max-w-sm text-humo">Cada modelo se hace en la tela y el color que quieras. Las fotos son solo un ejemplo.</p>
       </div>
-      <div class="mt-10 grid grid-cols-2 gap-x-3 gap-y-8 md:gap-x-5 lg:grid-cols-3">
-        {destacados.map((p) => <div class="reveal"><ProductoCard producto={p} /></div>)}
+      <div class="escalonado mt-8 grid grid-cols-2 gap-x-3 gap-y-8 md:mt-10 md:gap-x-5 lg:grid-cols-3">
+        {destacados.map((p) => <div><ProductoCard producto={p} /></div>)}
       </div>
       <div class="mt-12 text-center">
         <a href="/catalogo" class="btn-primario">Ver los {PRODUCTOS.length} modelos <Icono nombre="flecha" class="size-4" /></a>
@@ -104,57 +90,60 @@ const DESFILE = ['Hecho a medida', 'Más de 30 colores', 'Envíos a todo el paí
     </div>
   </section>
 
-  <!-- BENTO: COLORES + CIFRAS + SALONES -->
-  <section class="mx-auto max-w-7xl px-3 py-20 md:px-5 md:py-28">
-    <div class="grid gap-3 md:grid-cols-6">
-      <div class="reveal relative overflow-hidden rounded-[var(--radius-tarjeta)] bg-tinta p-7 text-white md:col-span-4 md:p-10">
-        <div class="pointer-events-none absolute -right-32 -bottom-32 size-96 rounded-full bg-[radial-gradient(circle,rgba(201,168,101,0.3),transparent_65%)]"></div>
-        <h2 class="titulo relative max-w-lg [&_em]:!text-oro">Cualquier modelo, <em>en tu color</em></h2>
-        <div class="relative mt-8 space-y-5">
+  <!-- COLORES + CIFRAS -->
+  <section class="mx-auto max-w-7xl px-3 pt-16 md:px-5 md:pt-24">
+    <div class="reveal relative overflow-hidden rounded-[var(--radius-tarjeta)] bg-tinta p-6 text-white md:p-12">
+      <div class="pointer-events-none absolute -right-32 -bottom-32 size-96 rounded-full bg-[radial-gradient(circle,rgba(201,168,101,0.3),transparent_65%)]"></div>
+      <div class="relative grid gap-10 lg:grid-cols-[1fr_1.1fr] lg:items-center">
+        <div>
+          <h2 class="titulo max-w-lg [&_em]:!text-oro">Cualquier modelo, <em>en tu color</em></h2>
+          <p class="mt-4 max-w-md text-white/70">Todos los modelos se fabrican en terciopelo o eco-cuero, en el color que elijas.</p>
+          <a href="/colores" class="btn group mt-8 bg-oro text-tinta hover:bg-oro-claro">Ver telas y colores <Icono nombre="flecha" class="size-4 transition-transform group-hover:translate-x-1" /></a>
+        </div>
+        <div class="space-y-6">
           {TELAS.map((t) => (
             <div>
               <p class="mb-3 text-sm text-white/70">{t.nombre}</p>
-              <ul class="flex flex-wrap gap-2">
+              <ul class="escalonado flex flex-wrap gap-2.5">
                 {t.colores.map((c) => (
-                  <li title={c.nombre} class="size-10 rounded-full ring-1 ring-white/20 md:size-11" style={`background:${c.hex}`}><span class="sr-only">{c.nombre}</span></li>
+                  <li title={c.nombre} class="size-10 rounded-full ring-1 ring-white/20 transition-transform duration-300 hover:scale-110 md:size-12" style={`background:${c.hex}`}><span class="sr-only">{c.nombre}</span></li>
                 ))}
               </ul>
             </div>
           ))}
         </div>
-        <a href="/colores" class="btn relative mt-8 bg-oro text-tinta hover:bg-oro-claro">Ver telas y colores <Icono nombre="flecha" class="size-4" /></a>
       </div>
-
-      <dl class="reveal grid grid-cols-2 gap-3 md:col-span-2">
+      <dl class="escalonado relative mt-10 grid grid-cols-2 rounded-2xl border border-white/10 md:mt-12 md:grid-cols-4">
         {CIFRAS.map((c) => (
-          <div class="flex min-h-36 flex-col justify-between gap-4 rounded-[var(--radius-tarjeta)] bg-white p-5">
-            <dt class="text-sm leading-snug text-humo">{c.etiqueta}</dt>
-            <dd class="text-4xl font-semibold tracking-tight md:text-5xl">{c.valor}</dd>
+          <div class="flex flex-col-reverse gap-1 border-white/10 p-5 even:border-l md:p-6 md:not-first:border-l [&:nth-child(n+3)]:border-t md:[&:nth-child(n+3)]:border-t-0">
+            <dt class="text-sm text-white/60">{c.etiqueta}</dt>
+            <dd class="text-3xl font-bold tracking-tight text-oro md:text-4xl" data-contar={c.valor.match(/\d+/)?.[0]}>{c.valor}</dd>
           </div>
         ))}
       </dl>
+    </div>
+  </section>
 
-      <a href="/estetica" class="reveal group relative overflow-hidden rounded-[var(--radius-tarjeta)] bg-white md:col-span-3">
-        <Image src={mostrador.imagenes[0]} alt="Recepción con mostrador capitoné negro" widths={[480, 600]} sizes="(min-width: 768px) 50vw, 100vw" class="aspect-[16/11] w-full object-cover transition-transform duration-700 ease-suave group-hover:scale-[1.03]" />
-        <div class="flex items-end justify-between gap-4 p-6 md:p-8">
-          <div>
-            <h2 class="text-3xl font-semibold tracking-tight">Equipá tu <em class="font-serif font-normal text-acento italic">salón</em></h2>
-            <p class="mt-2 text-humo">Mostradores, camillas y sillones de espera en el color de tu marca.</p>
+  <!-- SALONES + CÓMO COMPRAR -->
+  <section class="mx-auto max-w-7xl px-3 pt-3 pb-16 md:px-5 md:pb-24">
+    <div class="escalonado grid gap-3 md:grid-cols-2">
+      {[
+        { href: '/estetica', img: mostrador.imagenes[0], alt: 'Recepción con mostrador capitoné negro', titulo: 'Equipá tu', enfasis: 'salón', texto: 'Mostradores, camillas y sillones de espera en el color de tu marca.' },
+        { href: '/como-comprar', img: camilla.imagenes[0], alt: '', titulo: 'Cómo', enfasis: 'comprar', texto: 'Elegís, te pasamos presupuesto por WhatsApp, lo fabricamos y te lo enviamos.' },
+      ].map((b) => (
+        <a href={b.href} class="group elevable grid grid-cols-[7.5rem_1fr] overflow-hidden rounded-[var(--radius-tarjeta)] bg-white md:grid-cols-1">
+          <div class="overflow-hidden">
+            <Image src={b.img} alt={b.alt} widths={[240, 480, 640]} sizes="(min-width: 768px) 50vw, 120px" class="size-full object-cover transition-transform duration-700 ease-suave group-hover:scale-[1.04] md:aspect-[16/9] md:h-auto" />
           </div>
-          <span class="grid size-12 shrink-0 place-items-center rounded-full bg-tinta text-white transition group-hover:bg-acento"><Icono nombre="flecha" class="size-5" /></span>
-        </div>
-      </a>
-
-      <a href="/como-comprar" class="reveal group relative overflow-hidden rounded-[var(--radius-tarjeta)] bg-acento-suave md:col-span-3">
-        <Image src={camilla.imagenes[0]} alt="" widths={[480, 600]} sizes="(min-width: 768px) 50vw, 100vw" class="aspect-[16/11] w-full object-cover transition-transform duration-700 ease-suave group-hover:scale-[1.03]" />
-        <div class="flex items-end justify-between gap-4 p-6 md:p-8">
-          <div>
-            <h2 class="text-3xl font-semibold tracking-tight">Cómo <em class="font-serif font-normal text-acento italic">comprar</em></h2>
-            <p class="mt-2 text-humo">Elegís, te pasamos presupuesto por WhatsApp, lo fabricamos y te lo enviamos.</p>
+          <div class="flex items-center justify-between gap-4 p-5 md:p-8">
+            <div>
+              <h2 class="text-xl font-bold tracking-tight md:text-3xl">{b.titulo} <em class="font-serif text-[1.08em] font-normal text-acento italic">{b.enfasis}</em></h2>
+              <p class="mt-1.5 text-sm text-humo md:mt-2 md:text-base">{b.texto}</p>
+            </div>
+            <span class="hidden size-12 shrink-0 place-items-center rounded-full bg-tinta text-white transition group-hover:bg-acento md:grid"><Icono nombre="flecha" class="size-5 transition-transform group-hover:translate-x-0.5" /></span>
           </div>
-          <span class="grid size-12 shrink-0 place-items-center rounded-full bg-tinta text-white transition group-hover:bg-acento"><Icono nombre="flecha" class="size-5" /></span>
-        </div>
-      </a>
+        </a>
+      ))}
     </div>
 
     <div class="reveal mt-3 flex flex-col items-start justify-between gap-5 rounded-[var(--radius-tarjeta)] bg-white p-6 md:flex-row md:items-center md:px-10">
