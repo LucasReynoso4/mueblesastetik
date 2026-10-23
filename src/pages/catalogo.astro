@@ -21,50 +21,51 @@ const listado = {
   descripcion="Catálogo de sillones, puffs, mostradores, respaldos y camillas capitoné. Todos los modelos se fabrican a medida en más de 30 colores."
   jsonLd={[listado]}
 >
-  <section class="mx-auto max-w-7xl px-5 pt-12 pb-24 md:px-8 md:pt-20">
-    <p class="antetitulo">Catálogo</p>
-    <h1 class="titulo mt-4">Nuestros <em>modelos</em></h1>
-    <p class="mt-5 max-w-2xl leading-relaxed text-tinta/65">
-      Cada modelo se fabrica a medida, en la tela y el color que elijas. Las fotos muestran un ejemplo: <a href="/colores" class="underline decoration-oro underline-offset-4 hover:text-oro">mirá el muestrario completo</a>.
-    </p>
+  <section class="mx-auto max-w-7xl px-3 pt-10 pb-20 md:px-5 md:pt-16">
+    <div class="px-2">
+      <h1 class="titulo">Nuestros <em>modelos</em></h1>
+      <p class="mt-5 max-w-2xl text-lg leading-relaxed text-humo">
+        Cada modelo se fabrica a medida, en la tela y el color que elijas. Las fotos muestran un ejemplo: <a href="/colores" class="font-medium text-tinta underline decoration-oro decoration-2 underline-offset-4 hover:text-acento">mirá todas las telas y colores</a>.
+      </p>
+    </div>
 
-    <div id="filtros" class="sticky top-18 z-30 -mx-5 mt-10 border-y border-linea bg-crema/95 px-5 py-4 backdrop-blur md:top-20 md:mx-0 md:px-0">
-      <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-        <div class="-mx-5 flex gap-2 overflow-x-auto px-5 [scrollbar-width:none] md:mx-0 md:flex-wrap md:px-0" role="group" aria-label="Filtrar por categoría">
+    <div id="filtros" class="sticky top-[5.25rem] z-30 mt-8 rounded-[var(--radius-tarjeta)] bg-white/90 p-2 ring-1 ring-linea/70 backdrop-blur-xl">
+      <div class="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+        <div class="carrusel !gap-1.5" role="group" aria-label="Filtrar por categoría">
           <button type="button" data-filtro="categoria" data-valor="" class="chip" aria-pressed="true">Todos</button>
           {CATEGORIAS.map((c) => (
             <button type="button" data-filtro="categoria" data-valor={c.id} class="chip" aria-pressed="false">{c.nombre}</button>
           ))}
         </div>
-        <label class="flex items-center gap-3 text-xs uppercase tracking-[0.15em] text-tinta/60">
-          Uso
-          <select data-filtro-uso class="border border-linea bg-white px-3 py-2 text-sm tracking-normal normal-case text-tinta">
-            <option value="">Todos</option>
+        <label class="flex items-center gap-2 px-2 text-sm text-humo md:px-0">
+          <span class="shrink-0">Para</span>
+          <select data-filtro-uso class="min-h-11 w-full rounded-full bg-papel px-4 text-[15px] text-tinta md:w-auto">
+            <option value="">Cualquier uso</option>
             {USOS.map((u) => <option value={u.id}>{u.nombre}</option>)}
           </select>
         </label>
       </div>
     </div>
 
-    <p data-resultado class="mt-6 text-sm text-tinta/55" aria-live="polite">{PRODUCTOS.length} modelos</p>
+    <p data-resultado class="mt-6 px-2 text-sm text-humo" aria-live="polite">{PRODUCTOS.length} modelos</p>
 
-    <div class="mt-6 grid grid-cols-2 gap-x-3 gap-y-10 sm:gap-x-6 sm:gap-y-12 lg:grid-cols-3">
-      {PRODUCTOS.map((p, i) => <ProductoCard producto={p} prioridad={i < 3} />)}
+    <div class="escalonado mt-4 grid grid-cols-2 gap-x-3 gap-y-8 md:gap-x-5 lg:grid-cols-3">
+      {PRODUCTOS.map((p, i) => <ProductoCard producto={p} prioridad={i < 4} />)}
     </div>
-    <p data-sin-resultados hidden class="py-16 text-center text-tinta/60">
-      No hay modelos con esos filtros. Igual consultanos: <a class="underline" href={linkWhatsApp(MENSAJE_GENERAL)} target="_blank" rel="noopener">fabricamos a pedido</a>.
+    <p data-sin-resultados hidden class="py-16 text-center text-humo">
+      No hay modelos con esos filtros. Igual consultanos: <a class="font-medium text-tinta underline" href={linkWhatsApp(MENSAJE_GENERAL)} target="_blank" rel="noopener">fabricamos a pedido</a>.
     </p>
   </section>
-  <Cta titulo="¿No encontraste lo que buscás?" enfasis="Lo fabricamos a pedido." />
+  <Cta titulo="¿No encontraste lo que buscás?" enfasis="Lo fabricamos a pedido" />
 </Base>
 
 <style>
   @reference '../styles/global.css';
   .chip {
-    @apply shrink-0 cursor-pointer border border-linea bg-white px-4 py-2 text-xs uppercase tracking-[0.15em] whitespace-nowrap text-tinta/70 transition hover:border-oro;
+    @apply min-h-11 cursor-pointer rounded-full px-4 text-[15px] whitespace-nowrap text-humo transition hover:bg-papel hover:text-tinta;
   }
   .chip[aria-pressed='true'] {
-    @apply border-noche bg-noche text-crema;
+    @apply bg-tinta text-white;
   }
 </style>
 

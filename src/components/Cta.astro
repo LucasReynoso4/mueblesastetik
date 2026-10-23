@@ -1,5 +1,5 @@
 ---
-// Bloque final de llamada a la acción, oscuro.
+// Bloque final de llamada a la acción.
 import Icono from './Icono.astro';
 import { SITIO, linkWhatsApp, MENSAJE_GENERAL } from '../data/sitio';
 
@@ -10,25 +10,26 @@ interface Props {
   mensaje?: string;
 }
 const {
-  titulo = '¿Tenés una idea en mente?',
-  enfasis = 'La hacemos realidad.',
-  texto = 'Contanos qué mueble buscás, el color y las medidas. Te respondemos con el presupuesto sin compromiso.',
+  titulo = '¿Tenés una idea?',
+  enfasis = 'La hacemos realidad',
+  texto = 'Contanos qué mueble buscás, la tela, el color y las medidas. Te pasamos el presupuesto sin compromiso.',
   mensaje = MENSAJE_GENERAL,
 } = Astro.props;
 ---
-<section class="bg-noche px-5 py-24 text-center text-crema md:py-32">
-  <div class="reveal mx-auto max-w-2xl">
-    <p class="antetitulo justify-center">Contacto</p>
-    <h2 class="titulo mt-5">{titulo}<br /><em>{enfasis}</em></h2>
-    <p class="mx-auto mt-6 max-w-lg leading-relaxed text-crema/60">{texto}</p>
-    <div class="mt-10 flex flex-wrap justify-center gap-3">
-      <a href={linkWhatsApp(mensaje)} target="_blank" rel="noopener" class="btn-wa">
-        <Icono nombre="whatsapp" class="size-5" /> Pedir presupuesto
-      </a>
-      <a href={SITIO.instagram} target="_blank" rel="noopener" class="btn-borde text-crema/85">
-        <Icono nombre="instagram" class="size-4" /> Ver Instagram
-      </a>
+<section class="mx-auto max-w-7xl px-3 py-3 md:px-5">
+  <div class="reveal relative overflow-hidden rounded-[var(--radius-tarjeta)] bg-tinta px-6 py-16 text-white md:px-16 md:py-24">
+    <div class="pointer-events-none absolute -top-40 -right-40 size-[30rem] rounded-full bg-[radial-gradient(circle,rgba(201,168,101,0.35),transparent_65%)]"></div>
+    <div class="relative max-w-2xl">
+      <h2 class="titulo [&_em]:!text-oro">{titulo} <em>{enfasis}</em></h2>
+      <p class="mt-6 max-w-lg text-lg leading-relaxed text-white/75">{texto}</p>
+      <div class="mt-10 flex flex-col gap-3 sm:flex-row">
+        <a href={linkWhatsApp(mensaje)} target="_blank" rel="noopener" class="btn-wa">
+          <Icono nombre="whatsapp" class="size-5" /> Pedir presupuesto
+        </a>
+        <a href={SITIO.instagram} target="_blank" rel="noopener" class="btn text-white ring-1 ring-white/30 hover:bg-white/10">
+          <Icono nombre="instagram" class="size-4" /> Ver más trabajos en Instagram
+        </a>
+      </div>
     </div>
-    <p class="mt-6 text-xs tracking-wide text-crema/40">Atención {SITIO.horario.toLowerCase()} · Respondemos rápido</p>
   </div>
 </section>

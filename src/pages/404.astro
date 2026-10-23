@@ -2,13 +2,15 @@
 import Base from '../layouts/Base.astro';
 ---
 <Base titulo="Página no encontrada">
-  <section class="mx-auto max-w-2xl px-5 py-32 text-center">
-    <p class="antetitulo justify-center">Error 404</p>
-    <h1 class="titulo mt-5">Esta página <em>no existe</em></h1>
-    <p class="mt-6 text-tinta/60">Puede que el producto ya no esté o que el link tenga un error.</p>
-    <div class="mt-10 flex flex-wrap justify-center gap-3">
-      <a href="/catalogo" class="btn-oro">Ver catálogo</a>
-      <a href="/" class="btn-borde">Ir al inicio</a>
+  <section class="mx-auto max-w-7xl px-3 py-6 md:px-5">
+    <div class="rounded-[var(--radius-tarjeta)] bg-white px-6 py-24 text-center md:py-32">
+      <span class="etiqueta !bg-papel">Error 404</span>
+      <h1 class="titulo mt-6">Esta página <em>no existe</em></h1>
+      <p class="mt-6 text-lg text-humo">Puede que el producto ya no esté o que el link tenga un error.</p>
+      <div class="mt-10 flex flex-col justify-center gap-3 sm:flex-row">
+        <a href="/catalogo" class="btn-primario">Ver catálogo</a>
+        <a href="/" class="btn-claro">Ir al inicio</a>
+      </div>
     </div>
   </section>
 </Base>
