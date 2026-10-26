@@ -5,8 +5,8 @@ export const SITIO = {
   url: 'https://mueblesastetik.netlify.app',
   descripcion:
     'Muebles tapizados a medida: sillones, puffs, mostradores, respaldos y camillas capitoné. Más de 30 colores. Envíos a todo el país.',
-  whatsapp: '5491135710615',
-  whatsappVisible: '+54 9 11 3571-0615',
+  whatsapp: '5491136690128',
+  whatsappVisible: '+54 9 11 3669-0128',
   instagram: 'https://www.instagram.com/mueblesastetik/',
   instagramUsuario: '@mueblesastetik',
   mercadolibre: 'https://www.mercadolibre.com.ar/pagina/mueblesastetik',
