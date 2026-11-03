@@ -5,7 +5,7 @@ import ProductoCard from '../../components/ProductoCard.astro';
 import Icono from '../../components/Icono.astro';
 import { PRODUCTOS, formatoPrecio, precioDirecto, nombreCategoria, nombreUso, type Foto, type Producto } from '../../data/productos';
 import { TELAS, colorDe, telaPorId } from '../../data/colores';
-import { DESCUENTO_DIRECTO, SITIO, linkWhatsApp } from '../../data/sitio';
+import { DESCUENTO_DIRECTO, MODO_CATALOGO, SITIO, linkWhatsApp } from '../../data/sitio';
 
 export function getStaticPaths() {
   return PRODUCTOS.map((producto) => ({ params: { slug: producto.slug }, props: { producto } }));
@@ -51,7 +51,7 @@ const jsonLd = [
     category: nombreCategoria(p.categoria),
     brand: { '@type': 'Brand', name: SITIO.nombre },
     material: telas.map((t) => t.nombre).join(', '),
-    offers: {
+    offers: MODO_CATALOGO ? undefined : {
       '@type': 'AggregateOffer',
       priceCurrency: 'ARS',
       lowPrice: Math.min(...precios),
@@ -123,7 +123,7 @@ let paso = 0;
     <div class="entrada rounded-[var(--radius-tarjeta)] bg-white p-6 md:p-10" style="--d:1">
       <span class="etiqueta !bg-papel">{nombreCategoria(p.categoria)}</span>
       <h1 class="mt-4 text-4xl leading-[1] font-semibold tracking-[-0.035em] md:text-5xl">{p.nombre}</h1>
-      {DESCUENTO_DIRECTO > 0 ? (
+      {MODO_CATALOGO ? null : DESCUENTO_DIRECTO > 0 ? (
         <>
           <p class="mt-4 flex flex-wrap items-baseline gap-x-3 gap-y-1">
             <span class="text-3xl font-semibold tracking-tight" data-precio>{formatoPrecio(precioDirecto(opcionInicial.precio))}</span>
@@ -153,10 +153,10 @@ let paso = 0;
             <div class="mt-3 flex flex-wrap gap-2">
               {p.opciones.map((o, i) => (
                 <label class="cursor-pointer">
-                  <input type="radio" name="opcion" value={o.nombre} data-precio={formatoPrecio(precioDirecto(o.precio))} data-precio-ml={formatoPrecio(o.precio)} data-ml={o.mercadolibre} checked={i === 0} class="peer sr-only" />
+                  <input type="radio" name="opcion" value={o.nombre} data-precio={MODO_CATALOGO ? undefined : formatoPrecio(precioDirecto(o.precio))} data-precio-ml={MODO_CATALOGO ? undefined : formatoPrecio(o.precio)} data-ml={MODO_CATALOGO ? undefined : o.mercadolibre} checked={i === 0} class="peer sr-only" />
                   <span class="flex min-h-11 items-center gap-1.5 rounded-full bg-white px-4 text-[15px] ring-1 ring-linea transition peer-checked:bg-tinta peer-checked:text-white peer-checked:ring-tinta peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-acento">
                     {o.nombre}
-                    <span class="text-sm opacity-60">{formatoPrecio(precioDirecto(o.precio))}</span>
+                    {!MODO_CATALOGO && <span class="text-sm opacity-60">{formatoPrecio(precioDirecto(o.precio))}</span>}
                   </span>
                 </label>
               ))}
@@ -207,13 +207,15 @@ let paso = 0;
         <a data-wa-producto href={linkWhatsApp(mensaje(eleccionInicial))} target="_blank" rel="noopener" class="btn-wa w-full !min-h-14 !text-base">
           <Icono nombre="whatsapp" class="size-5" /> Consultar por WhatsApp
         </a>
-        <div class="grid grid-cols-2 gap-2.5">
+        <div class:list={['grid gap-2.5', !MODO_CATALOGO && 'grid-cols-2']}>
           <button type="button" data-agregar data-slug={p.slug} data-nombre={p.nombre} data-color={eleccionInicial} class="btn-claro">
             <Icono nombre="mas" class="size-4" /> A mi lista
           </button>
-          <a data-ml-producto href={opcionInicial.mercadolibre} target="_blank" rel="noopener" class="btn-ml">
-            Mercado Libre
-          </a>
+          {!MODO_CATALOGO && (
+            <a data-ml-producto href={opcionInicial.mercadolibre} target="_blank" rel="noopener" class="btn-ml">
+              Mercado Libre
+            </a>
+          )}
         </div>
       </div>
 
@@ -260,10 +262,10 @@ let paso = 0;
   const nombre = ficha.dataset.nombre!;
   const variasOpciones = ficha.hasAttribute('data-varias-opciones');
   const wa = ficha.querySelector<HTMLAnchorElement>('[data-wa-producto]')!;
-  const ml = ficha.querySelector<HTMLAnchorElement>('[data-ml-producto]')!;
+  const ml = ficha.querySelector<HTMLAnchorElement>('[data-ml-producto]');
   const agregar = ficha.querySelector<HTMLButtonElement>('[data-agregar]')!;
   const etiqueta = ficha.querySelector<HTMLElement>('[data-color-nombre]')!;
-  const precio = ficha.querySelector<HTMLElement>('[data-precio]')!;
+  const precio = ficha.querySelector<HTMLElement>('[data-precio]');
   const precioMl = ficha.querySelector<HTMLElement>('[data-precio-ml]');
   const fotos = [...ficha.querySelectorAll<HTMLImageElement>('img[data-foto]')];
   const miniaturas = [...ficha.querySelectorAll<HTMLButtonElement>('[data-miniatura]')];
@@ -288,9 +290,9 @@ let paso = 0;
     const opcion = selector.querySelector<HTMLInputElement>('input[name="opcion"]:checked');
 
     if (opcion) {
-      precio.textContent = opcion.dataset.precio!;
+      if (precio) precio.textContent = opcion.dataset.precio!;
       if (precioMl) precioMl.textContent = opcion.dataset.precioMl!;
-      ml.href = opcion.dataset.ml!;
+      if (ml) ml.href = opcion.dataset.ml!;
     }
 
     if ((evento.target as HTMLInputElement).name !== 'opcion') {

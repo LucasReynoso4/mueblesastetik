@@ -4,7 +4,7 @@ import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import WhatsAppFlotante from '../components/WhatsAppFlotante.astro';
 import ListaConsulta from '../components/ListaConsulta.astro';
-import { SITIO } from '../data/sitio';
+import { SITIO, MODO_CATALOGO } from '../data/sitio';
 
 interface Props {
   titulo?: string;
@@ -22,14 +22,14 @@ const negocio = {
   '@context': 'https://schema.org',
   '@type': 'FurnitureStore',
   name: SITIO.nombre,
-  url: SITIO.url,
+  url: Astro.site?.href ?? SITIO.url,
   image: new URL('/og.jpg', Astro.site).href,
   logo: new URL('/icon-512.png', Astro.site).href,
   description: SITIO.descripcion,
   telephone: SITIO.whatsappVisible,
   address: { '@type': 'PostalAddress', addressRegion: 'Buenos Aires', addressCountry: 'AR' },
   areaServed: 'AR',
-  sameAs: [SITIO.instagram, SITIO.mercadolibre],
+  sameAs: MODO_CATALOGO ? [SITIO.instagram] : [SITIO.instagram, SITIO.mercadolibre],
 };
 ---
 <!doctype html>
@@ -41,6 +41,7 @@ const negocio = {
     <title>{tituloCompleto}</title>
     <meta name="description" content={descripcion} />
     <link rel="canonical" href={canonical} />
+    {MODO_CATALOGO && <meta name="robots" content="noindex" />}
     <meta name="theme-color" content="#f4f0ea" />
 
     <link rel="icon" href="/favicon.ico" sizes="48x48" />
