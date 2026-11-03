@@ -1,12 +1,20 @@
 // Datos de contacto y del negocio. Todo lo que cambia seguido está acá.
 
+// La página se publica dos veces desde este mismo código:
+// - Página principal (suegro): precio directo comparado con Mercado Libre, WhatsApp 11 3669-0128.
+// - Catálogo (suegra): mismos muebles SIN precios ni Mercado Libre, WhatsApp 11 3571-0615.
+//   Se activa con la variable de entorno PUBLIC_MODO=catalogo (en el sitio de Netlify del catálogo).
+export const MODO_CATALOGO = import.meta.env.PUBLIC_MODO === 'catalogo';
+
+const WHATSAPP_PRINCIPAL = { whatsapp: '5491136690128', whatsappVisible: '+54 9 11 3669-0128' };
+const WHATSAPP_CATALOGO = { whatsapp: '5491135710615', whatsappVisible: '+54 9 11 3571-0615' };
+
 export const SITIO = {
   nombre: 'Muebles Astetik',
   url: 'https://mueblesastetik.netlify.app',
   descripcion:
     'Muebles tapizados a medida: sillones, puffs, mostradores, respaldos y camillas capitoné. Más de 30 colores. Envíos a todo el país.',
-  whatsapp: '5491136690128',
-  whatsappVisible: '+54 9 11 3669-0128',
+  ...(MODO_CATALOGO ? WHATSAPP_CATALOGO : WHATSAPP_PRINCIPAL),
   instagram: 'https://www.instagram.com/mueblesastetik/',
   instagramUsuario: '@mueblesastetik',
   mercadolibre: 'https://www.mercadolibre.com.ar/pagina/mueblesastetik',

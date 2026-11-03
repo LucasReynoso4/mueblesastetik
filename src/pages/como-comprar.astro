@@ -1,7 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
 import Cta from '../components/Cta.astro';
-import { SITIO } from '../data/sitio';
+import { SITIO, MODO_CATALOGO } from '../data/sitio';
 
 const PASOS = [
   { t: 'Elegí el modelo', d: 'Recorré el catálogo o mandanos una foto de lo que tenés en mente.' },
@@ -15,7 +15,7 @@ const PREGUNTAS = [
   { p: '¿Hacen muebles a medida?', r: 'Sí, todos nuestros muebles se pueden adaptar. Pasanos las medidas de tu espacio y te decimos qué se puede hacer.' },
   { p: '¿Cuánto tarda la fabricación?', r: 'Depende del modelo y de la cantidad. Te confirmamos el tiempo exacto junto con el presupuesto.' },
   { p: '¿Hacen envíos?', r: 'Sí, enviamos a todo el país. El costo depende del destino y del tamaño del mueble.' },
-  { p: '¿Cómo puedo pagar?', r: `Podés comprar a través de nuestra tienda en Mercado Libre, con todos sus medios de pago y su protección al comprador, o coordinar el pago directamente con nosotros por WhatsApp.` },
+  { p: '¿Cómo puedo pagar?', r: MODO_CATALOGO ? 'Lo coordinamos directamente con vos por WhatsApp, con transferencia o efectivo.' : `Podés comprar a través de nuestra tienda en Mercado Libre, con todos sus medios de pago y su protección al comprador, o coordinar el pago directamente con nosotros por WhatsApp.` },
   { p: '¿Hacen equipamiento para locales y salones?', r: 'Sí, es una de nuestras especialidades: mostradores, camillas, sillones de espera y puffs en el color de tu marca.' },
 ];
 
@@ -43,9 +43,9 @@ const faq = {
     <div class="grid gap-8 rounded-[var(--radius-tarjeta)] bg-white p-6 md:grid-cols-[1fr_1.6fr] md:p-12">
       <div>
         <h2 class="titulo !text-4xl md:!text-5xl">Preguntas <em>frecuentes</em></h2>
-        <p class="mt-4 text-humo">
+        {MODO_CATALOGO ? <p class="mt-4 text-humo">¿Te quedó alguna duda? Escribinos por WhatsApp y te respondemos.</p> : <p class="mt-4 text-humo">
           ¿Preferís comprar con la protección de Mercado Libre? <a href={SITIO.mercadolibre} target="_blank" rel="noopener" class="font-medium text-tinta underline underline-offset-4 hover:text-acento">Visitá nuestra tienda</a>.
-        </p>
+        </p>}
       </div>
       <div class="space-y-2">
         {PREGUNTAS.map((q) => (
