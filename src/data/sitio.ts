@@ -15,8 +15,8 @@ export const SITIO = {
 };
 
 // Descuento por comprar directo (transferencia o efectivo) sobre el precio de Mercado Libre.
-// 0.15 = 15% menos, con el envío a cargo del comprador (ML se queda con 14% a 44% según envío gratis y cuotas). Con 0 se muestra solo el precio de Mercado Libre.
-export const DESCUENTO_DIRECTO = 0.15;
+// Ej.: 0.15 = 15% menos (con el envío a cargo del comprador). Con 0 se muestra solo el precio de Mercado Libre. Pausado por ahora (nov. 2026).
+export const DESCUENTO_DIRECTO = 0;
 
 // Cifras que se muestran en la página. Revisar que sigan siendo ciertas.
 export const CIFRAS = [
