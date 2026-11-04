@@ -89,7 +89,11 @@ export async function prepararColoreo(canvas: HTMLCanvasElement, srcFoto: string
 
   return (hex: string) => {
     const n = parseInt(hex.slice(1), 16);
-    let destino = [(n >> 16) & 255, (n >> 8) & 255, n & 255].map((c) => lineal(c / 255) * exposicion);
+    // La pana y el eco-cuero siempre devuelven un poco de brillo, aunque sean negros:
+    // sin esto un color muy oscuro queda como una mancha sin textura
+    const lineales = [(n >> 16) & 255, (n >> 8) & 255, n & 255].map((c) => lineal(c / 255));
+    const piso = 0.03 * (1 - luminancia(hex)) ** 4;
+    let destino = lineales.map((c) => (c + piso) * exposicion);
     // En colores claros, que las zonas más iluminadas no se quemen a blanco y se pierda la textura
     const tope = Math.max(...destino) * brillo(yDe(p95) / yRef);
     if (tope > 0.92) destino = destino.map((c) => (c * 0.92) / tope);

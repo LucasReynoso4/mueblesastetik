@@ -14,6 +14,8 @@ Opciones:
   --piezas 1          quedarse también con piezas separadas de al menos esta fracción de la mayor
                       (ej. 0.05 para un mostrador con puffs y silla)
   --zona x0,y0,x1,y1  limitar a un recuadro (fracciones de 0 a 1) si se cuela algo del fondo
+  --quitar x0,y0,x1,y1  sacar un recuadro (ej. almohadones estampados); se puede repetir
+  --sin-sombra        no sumar el borde oscuro (usalo si la pared de atrás es oscura)
 """
 import argparse
 import cv2
@@ -28,6 +30,8 @@ ap.add_argument('--tol', type=int, default=14)
 ap.add_argument('--cierre', type=int, default=5)
 ap.add_argument('--piezas', type=float, default=1)
 ap.add_argument('--zona')
+ap.add_argument('--sin-sombra', action='store_true')
+ap.add_argument('--quitar', action='append', default=[])
 a = ap.parse_args()
 
 img = cv2.imread(a.foto, cv2.IMREAD_COLOR)
@@ -52,6 +56,9 @@ if a.zona:
     zona[int(y0 * alto):int(y1 * alto), int(x0 * ancho):int(x1 * ancho)] = 255
 else:
     zona[:] = 255
+for q in a.quitar:
+    x0, y0, x1, y1 = (float(t) for t in q.split(','))
+    zona[int(y0 * alto):int(y1 * alto), int(x0 * ancho):int(x1 * ancho)] = 0
 m &= zona
 
 # Limpieza: quedarse con la pieza más grande (y las que pidan --piezas), cerrar huequitos
@@ -67,9 +74,11 @@ if a.cierre > 5:
     cv2.floodFill(relleno, np.zeros((alto + 2, ancho + 2), np.uint8), (0, 0), 255)
     m = m | cv2.bitwise_not(relleno)
 # Sumar el borde en sombra (muy oscuro, pierde el tono) pegado a la tela
-for _ in range(3):
+for _ in range(0 if a.sin_sombra else 3):
     borde = cv2.dilate(m, np.ones((5, 5), np.uint8)) & ~m
     m = m | (borde & np.where(v < 60, 255, 0).astype(np.uint8) & zona)
+# Agrandar 2 px para que no quede un contorno del color original
+m = cv2.dilate(m, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5, 5))) & zona
 # Bordes suaves
 m = cv2.GaussianBlur(m, (0, 0), 0.8)
 cv2.imwrite(a.salida, m)
