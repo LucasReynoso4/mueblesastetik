@@ -35,8 +35,12 @@ export const USOS = [
 export type CategoriaId = (typeof CATEGORIAS)[number]['id'];
 export type UsoId = (typeof USOS)[number]['id'];
 
-/** Si la foto muestra un color del muestrario, al elegir ese color en la ficha se muestra esta foto */
-export type Foto = { imagen: ImageMetadata; tela?: string; color?: string };
+/**
+ * Si la foto muestra un color del muestrario, al elegir ese color en la ficha se muestra esta foto.
+ * Con `mascara` (PNG en blanco y negro, blanco = tela; se genera con scripts/mascara.py) la foto pasa a ser
+ * la principal de la ficha y se pinta del color que elija el cliente, sin cambiar de foto.
+ */
+export type Foto = { imagen: ImageMetadata; tela?: string; color?: string; mascara?: ImageMetadata };
 
 /** Una medida o versión del modelo, con su precio y su publicación de Mercado Libre */
 export type Opcion = { nombre: string; precio: number; mercadolibre: string };
@@ -92,7 +96,7 @@ export const PRODUCTOS: Producto[] = [
       { imagen: foto('respaldo-flor/06.webp'), tela: 'pana', color: 'rojo' },
       { imagen: foto('respaldo-flor/07.webp'), tela: 'pana', color: 'verde-esmeralda' },
       { imagen: foto('respaldo-flor/08.webp'), tela: 'pana', color: 'violeta' },
-      { imagen: foto('respaldo-flor/09.webp'), tela: 'pana', color: 'amarillo' },
+      { imagen: foto('respaldo-flor/09.webp'), tela: 'pana', color: 'amarillo', mascara: foto('respaldo-flor/09-mascara.png') },
       { imagen: foto('respaldo-flor/10.webp'), tela: 'pana', color: 'lila' },
       { imagen: foto('respaldo-flor/11.webp'), tela: 'pana', color: 'naranja' },
       { imagen: foto('respaldo-flor/12.webp'), tela: 'pana', color: 'natural' },
@@ -137,7 +141,7 @@ export const PRODUCTOS: Producto[] = [
       { imagen: foto('respaldo-capitone/08.webp'), tela: 'eco-cuero', color: 'beige' },
       { imagen: foto('respaldo-capitone/09.webp'), tela: 'pana', color: 'gris' },
       { imagen: foto('respaldo-capitone/10.webp'), tela: 'pana', color: 'azul-francia' },
-      { imagen: foto('respaldo-capitone/11.webp'), tela: 'pana', color: 'rojo' },
+      { imagen: foto('respaldo-capitone/11.webp'), tela: 'pana', color: 'rojo', mascara: foto('respaldo-capitone/11-mascara.png') },
       { imagen: foto('respaldo-capitone/12.webp'), tela: 'pana', color: 'violeta' },
       { imagen: foto('respaldo-capitone/13.webp') },
       { imagen: foto('respaldo-capitone/14.webp') },
@@ -165,7 +169,7 @@ export const PRODUCTOS: Producto[] = [
     ],
     fotos: [
       { imagen: foto('respaldo-vainillado/01.webp'), tela: 'pana', color: 'gris' },
-      { imagen: foto('respaldo-vainillado/02.webp'), tela: 'pana', color: 'azul-francia' },
+      { imagen: foto('respaldo-vainillado/02.webp'), tela: 'pana', color: 'azul-francia', mascara: foto('respaldo-vainillado/02-mascara.png') },
       { imagen: foto('respaldo-vainillado/03.webp'), tela: 'pana', color: 'rosa' },
       { imagen: foto('respaldo-vainillado/04.webp') },
       { imagen: foto('respaldo-vainillado/05.webp') },
@@ -197,7 +201,7 @@ export const PRODUCTOS: Producto[] = [
       { imagen: foto('baulera-capitone/02.webp'), tela: 'pana', color: 'amarillo' },
       { imagen: foto('baulera-capitone/03.webp'), tela: 'pana', color: 'azul-francia' },
       { imagen: foto('baulera-capitone/04.webp'), tela: 'pana', color: 'beige' },
-      { imagen: foto('baulera-capitone/05.webp'), tela: 'pana', color: 'fucsia' },
+      { imagen: foto('baulera-capitone/05.webp'), tela: 'pana', color: 'fucsia', mascara: foto('baulera-capitone/05-mascara.png') },
       { imagen: foto('baulera-capitone/06.webp'), tela: 'pana', color: 'negro' },
       { imagen: foto('baulera-capitone/07.webp'), tela: 'pana', color: 'rosa' },
       { imagen: foto('baulera-capitone/08.webp'), tela: 'pana', color: 'verde-esmeralda' },
@@ -240,7 +244,7 @@ export const PRODUCTOS: Producto[] = [
       { imagen: foto('puff-redondo/10.webp'), tela: 'pana', color: 'turquesa' },
       { imagen: foto('puff-redondo/11.webp'), tela: 'eco-cuero', color: 'verde-ingles' },
       { imagen: foto('puff-redondo/12.webp'), tela: 'eco-cuero', color: 'violeta' },
-      { imagen: foto('puff-redondo/13.webp') },
+      { imagen: foto('puff-redondo/13.webp'), tela: 'pana', color: 'fucsia', mascara: foto('puff-redondo/13-mascara.png') },
       { imagen: foto('puff-redondo/14.webp') },
     ],
   },
@@ -267,7 +271,7 @@ export const PRODUCTOS: Producto[] = [
       { imagen: foto('puff-cuadrado/02.webp'), tela: 'pana', color: 'amarillo' },
       { imagen: foto('puff-cuadrado/03.webp'), tela: 'pana', color: 'blanco' },
       { imagen: foto('puff-cuadrado/04.webp'), tela: 'pana', color: 'celeste' },
-      { imagen: foto('puff-cuadrado/05.webp'), tela: 'pana', color: 'fucsia' },
+      { imagen: foto('puff-cuadrado/05.webp'), tela: 'pana', color: 'fucsia', mascara: foto('puff-cuadrado/05-mascara.png') },
       { imagen: foto('puff-cuadrado/06.webp'), tela: 'pana', color: 'negro' },
       { imagen: foto('puff-cuadrado/07.webp'), tela: 'pana', color: 'rosa-claro' },
       { imagen: foto('puff-cuadrado/08.webp'), tela: 'pana', color: 'verde-ingles' },
@@ -298,7 +302,7 @@ export const PRODUCTOS: Producto[] = [
       { imagen: foto('puff-con-respaldo/02.webp'), tela: 'pana', color: 'beige' },
       { imagen: foto('puff-con-respaldo/03.webp'), tela: 'pana', color: 'fucsia' },
       { imagen: foto('puff-con-respaldo/04.webp'), tela: 'eco-cuero', color: 'negro' },
-      { imagen: foto('puff-con-respaldo/05.webp'), tela: 'pana', color: 'rojo' },
+      { imagen: foto('puff-con-respaldo/05.webp'), tela: 'pana', color: 'rojo', mascara: foto('puff-con-respaldo/05-mascara.png') },
       { imagen: foto('puff-con-respaldo/06.webp'), tela: 'pana', color: 'rosa' },
       { imagen: foto('puff-con-respaldo/07.webp'), tela: 'pana', color: 'verde-esmeralda' },
       { imagen: foto('puff-con-respaldo/08.webp'), tela: 'pana', color: 'gris' },
@@ -331,7 +335,7 @@ export const PRODUCTOS: Producto[] = [
     fotos: [
       { imagen: foto('puff-capitone-grande/01.webp'), tela: 'pana', color: 'azul-francia' },
       { imagen: foto('puff-capitone-grande/02.webp'), tela: 'pana', color: 'bordo' },
-      { imagen: foto('puff-capitone-grande/03.webp'), tela: 'pana', color: 'fucsia' },
+      { imagen: foto('puff-capitone-grande/03.webp'), tela: 'pana', color: 'fucsia', mascara: foto('puff-capitone-grande/03-mascara.png') },
       { imagen: foto('puff-capitone-grande/04.webp'), tela: 'pana', color: 'rosa' },
       { imagen: foto('puff-capitone-grande/05.webp'), tela: 'pana', color: 'beige' },
       { imagen: foto('puff-capitone-grande/06.webp'), tela: 'pana', color: 'gris-oscuro' },
@@ -366,7 +370,7 @@ export const PRODUCTOS: Producto[] = [
     fotos: [
       { imagen: foto('sillon-redondo-capitone/01.webp'), tela: 'pana', color: 'natural' },
       { imagen: foto('sillon-redondo-capitone/02.webp') },
-      { imagen: foto('sillon-redondo-capitone/03.webp') },
+      { imagen: foto('sillon-redondo-capitone/03.webp'), tela: 'pana', color: 'fucsia', mascara: foto('sillon-redondo-capitone/03-mascara.png') },
       { imagen: foto('sillon-redondo-capitone/04.webp') },
       { imagen: foto('sillon-redondo-capitone/05.webp') },
       { imagen: foto('sillon-redondo-capitone/06.webp') },
@@ -393,7 +397,7 @@ export const PRODUCTOS: Producto[] = [
     ],
     fotos: [
       { imagen: foto('sillon-labios/01.webp'), tela: 'pana', color: 'fucsia' },
-      { imagen: foto('sillon-labios/02.webp') },
+      { imagen: foto('sillon-labios/02.webp'), tela: 'pana', color: 'fucsia', mascara: foto('sillon-labios/02-mascara.png') },
       { imagen: foto('sillon-labios/03.webp') },
       { imagen: foto('sillon-labios/04.webp') },
       { imagen: foto('sillon-labios/05.webp') },
@@ -419,7 +423,7 @@ export const PRODUCTOS: Producto[] = [
     ],
     fotos: [
       { imagen: foto('sillon-zapato/01.webp'), tela: 'pana', color: 'negro' },
-      { imagen: foto('sillon-zapato/02.webp'), tela: 'pana', color: 'rojo' },
+      { imagen: foto('sillon-zapato/02.webp'), tela: 'pana', color: 'rojo', mascara: foto('sillon-zapato/02-mascara.png') },
       { imagen: foto('sillon-zapato/03.webp') },
       { imagen: foto('sillon-zapato/04.webp') },
     ],
@@ -445,7 +449,7 @@ export const PRODUCTOS: Producto[] = [
       { nombre: 'Mostrador 1 m con cajonera', precio: 315600, mercadolibre: 'https://www.mercadolibre.com.ar/mostrador-con-capitone-cajonera/up/MLAU4683106576' },
     ],
     fotos: [
-      { imagen: foto('mostrador-capitone/01.webp'), tela: 'pana', color: 'fucsia' },
+      { imagen: foto('mostrador-capitone/01.webp'), tela: 'pana', color: 'fucsia', mascara: foto('mostrador-capitone/01-mascara.png') },
       { imagen: foto('mostrador-capitone/02.webp'), tela: 'pana', color: 'rojo' },
       { imagen: foto('mostrador-capitone/03.webp'), tela: 'eco-cuero', color: 'blanco' },
       { imagen: foto('mostrador-capitone/04.webp'), tela: 'eco-cuero', color: 'rosa-gold' },
@@ -483,7 +487,7 @@ export const PRODUCTOS: Producto[] = [
       { imagen: foto('mostrador-curvo-capitone/04.webp') },
       { imagen: foto('mostrador-curvo-capitone/05.webp') },
       { imagen: foto('mostrador-curvo-capitone/06.webp') },
-      { imagen: foto('mostrador-curvo-capitone/07.webp') },
+      { imagen: foto('mostrador-curvo-capitone/07.webp'), tela: 'pana', color: 'violeta', mascara: foto('mostrador-curvo-capitone/07-mascara.png') },
       { imagen: foto('mostrador-curvo-capitone/08.webp') },
     ],
   },
@@ -508,7 +512,7 @@ export const PRODUCTOS: Producto[] = [
     fotos: [
       { imagen: foto('mostrador-capitone-con-puffs/01.webp'), tela: 'pana', color: 'fucsia' },
       { imagen: foto('mostrador-capitone-con-puffs/02.webp'), tela: 'pana', color: 'azul-francia' },
-      { imagen: foto('mostrador-capitone-con-puffs/03.webp') },
+      { imagen: foto('mostrador-capitone-con-puffs/03.webp'), tela: 'pana', color: 'fucsia', mascara: foto('mostrador-capitone-con-puffs/03-mascara.png') },
       { imagen: foto('mostrador-capitone-con-puffs/04.webp') },
       { imagen: foto('mostrador-capitone-con-puffs/05.webp') },
       { imagen: foto('mostrador-capitone-con-puffs/06.webp') },
@@ -536,7 +540,7 @@ export const PRODUCTOS: Producto[] = [
     fotos: [
       { imagen: foto('camilla-lashista/01.webp'), tela: 'eco-cuero', color: 'fucsia' },
       { imagen: foto('camilla-lashista/02.webp'), tela: 'eco-cuero', color: 'rosa-claro' },
-      { imagen: foto('camilla-lashista/03.webp') },
+      { imagen: foto('camilla-lashista/03.webp'), tela: 'pana', color: 'fucsia', mascara: foto('camilla-lashista/03-mascara.png') },
       { imagen: foto('camilla-lashista/04.webp') },
       { imagen: foto('camilla-lashista/05.webp') },
     ],
@@ -564,7 +568,7 @@ export const PRODUCTOS: Producto[] = [
       { imagen: foto('sillon-camilla-curva/01.webp'), tela: 'pana', color: 'rosa' },
       { imagen: foto('sillon-camilla-curva/02.webp') },
       { imagen: foto('sillon-camilla-curva/03.webp') },
-      { imagen: foto('sillon-camilla-curva/04.webp') },
+      { imagen: foto('sillon-camilla-curva/04.webp'), tela: 'pana', color: 'fucsia', mascara: foto('sillon-camilla-curva/04-mascara.png') },
     ],
   },
   {
@@ -588,7 +592,7 @@ export const PRODUCTOS: Producto[] = [
       { nombre: 'Ágata con apoyabrazos', precio: 257450, mercadolibre: 'https://www.mercadolibre.com.ar/silla-sillon-escritorio-agata-ajuste-con-ruedas-color-rosa-te-material-de-tapiceria-terciopelo/p/MLA69856412' },
     ],
     fotos: [
-      { imagen: foto('silla-giratoria-capitone/01.webp'), tela: 'pana', color: 'fucsia' },
+      { imagen: foto('silla-giratoria-capitone/01.webp'), tela: 'pana', color: 'fucsia', mascara: foto('silla-giratoria-capitone/01-mascara.png') },
       { imagen: foto('silla-giratoria-capitone/02.webp'), tela: 'eco-cuero', color: 'marron' },
       { imagen: foto('silla-giratoria-capitone/03.webp'), tela: 'pana', color: 'rosa' },
       { imagen: foto('silla-giratoria-capitone/04.webp'), tela: 'eco-cuero', color: 'rosa' },
@@ -617,7 +621,7 @@ export const PRODUCTOS: Producto[] = [
       { nombre: '1 unidad', precio: 138000, mercadolibre: 'https://www.mercadolibre.com.ar/banqueta-mueblesastetik-nordica-107-cm-pana-1-unidad/up/MLAU3431583613' },
     ],
     fotos: [
-      { imagen: foto('banqueta-alta-nordica/01.webp'), tela: 'eco-cuero', color: 'fucsia' },
+      { imagen: foto('banqueta-alta-nordica/01.webp'), tela: 'eco-cuero', color: 'fucsia', mascara: foto('banqueta-alta-nordica/01-mascara.png') },
       { imagen: foto('banqueta-alta-nordica/02.webp'), tela: 'eco-cuero', color: 'negro' },
       { imagen: foto('banqueta-alta-nordica/03.webp') },
     ],

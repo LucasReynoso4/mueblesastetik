@@ -13,7 +13,16 @@ export function getStaticPaths() {
 
 const { producto: p } = Astro.props as { producto: Producto };
 const telas = TELAS.filter((t) => !p.telas || p.telas.includes(t.id));
-const portada = p.fotos[0];
+// Si hay una foto con máscara, va primero y se pinta del color elegido
+const indiceColoreable = p.fotos.findIndex((f) => f.mascara);
+const galeria = indiceColoreable > 0 ? [p.fotos[indiceColoreable], ...p.fotos.filter((_, i) => i !== indiceColoreable)] : p.fotos;
+const portada = galeria[0];
+const coloreable = portada.mascara
+  ? {
+      foto: (await getImage({ src: portada.imagen, width: 800, format: 'webp' })).src,
+      mascara: (await getImage({ src: portada.mascara, width: 800, format: 'png' })).src,
+    }
+  : undefined;
 const telaInicial = telas.find((t) => t.id === portada.tela) ?? telas[0];
 const colorInicial = (portada.color && colorDe(telaInicial.id, portada.color)) || telaInicial.colores[0];
 const opcionInicial = p.opciones[0];
@@ -85,7 +94,7 @@ let paso = 0;
   <article class="mx-auto grid max-w-7xl gap-3 px-3 pt-4 pb-16 md:grid-cols-2 md:px-5 md:pb-24" data-ficha data-nombre={p.nombre} data-varias-opciones={variasOpciones ? '' : undefined}>
     <div class="md:sticky md:top-24 md:self-start">
       <div class="tarjeta relative" style={`view-transition-name: foto-${p.slug}`}>
-        {p.fotos.map((f, i) => (
+        {galeria.map((f, i) => (
           <Picture
             src={f.imagen}
             alt={`${p.nombre}${etiquetaFoto(f) ? ` en ${etiquetaFoto(f)!.texto}` : ''}`}
@@ -104,14 +113,17 @@ let paso = 0;
             class="aspect-[4/5] w-full object-cover"
           />
         ))}
+        {coloreable && (
+          <canvas data-lienzo data-foto-src={coloreable.foto} data-mascara-src={coloreable.mascara} hidden aria-hidden="true" class="absolute inset-0 size-full object-cover"></canvas>
+        )}
         <p data-etiqueta-foto hidden={!etiquetaPortada} class="etiqueta absolute bottom-4 left-4">
           <span data-etiqueta-hex class="size-3 rounded-full ring-1 ring-tinta/10" style={`background:${etiquetaPortada?.hex ?? 'transparent'}`}></span>
-          En la foto: <span data-etiqueta-texto>{etiquetaPortada?.texto}</span>
+          <span data-etiqueta-prefijo>En la foto:</span> <span data-etiqueta-texto>{etiquetaPortada?.texto}</span>
         </p>
       </div>
-      {p.fotos.length > 1 && (
+      {galeria.length > 1 && (
         <div class="mt-3 grid grid-cols-5 gap-2 sm:grid-cols-7">
-          {p.fotos.map((f, i) => (
+          {galeria.map((f, i) => (
             <button type="button" data-miniatura={i} aria-label={`Ver foto ${i + 1}${etiquetaFoto(f) ? `: ${etiquetaFoto(f)!.texto}` : ''}`} aria-current={i === 0 ? 'true' : undefined} class="miniatura">
               <Picture src={f.imagen} alt="" formats={['webp']} fallbackFormat="webp" widths={[160]} sizes="80px" class="aspect-square w-full object-cover" />
             </button>
@@ -188,7 +200,7 @@ let paso = 0;
             <div data-colores-tela={t.id} hidden={t.id !== telaInicial.id} class="mt-3 flex flex-wrap gap-2">
               {t.colores.map((c) => (
                 <label class="cursor-pointer" title={c.nombre}>
-                  <input type="radio" name={`color-${t.id}`} value={c.nombre} data-id={c.id} checked={t.id === telaInicial.id ? c.id === colorInicial.id : c === t.colores[0]} class="peer sr-only" />
+                  <input type="radio" name={`color-${t.id}`} value={c.nombre} data-id={c.id} data-hex={c.hex} checked={t.id === telaInicial.id ? c.id === colorInicial.id : c === t.colores[0]} class="peer sr-only" />
                   <span class="block size-12 rounded-full p-1 ring-2 ring-transparent transition peer-checked:ring-tinta peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-acento">
                     <span class="block size-full rounded-full ring-1 ring-tinta/10" style={`background:${c.hex}`}></span>
                   </span>
@@ -198,7 +210,7 @@ let paso = 0;
             </div>
           ))}
           <p class="mt-4 text-sm text-humo">
-            Los colores con foto cambian la imagen. <a href="/colores" class="font-medium text-tinta underline underline-offset-4 hover:text-acento">Ver muestrario</a>
+            {coloreable ? 'La foto se pinta del color que elijas (es una vista aproximada).' : 'Los colores con foto cambian la imagen.'} <a href="/colores" class="font-medium text-tinta underline underline-offset-4 hover:text-acento">Ver muestrario</a>
           </p>
         </fieldset>
       </div>
@@ -257,6 +269,8 @@ let paso = 0;
 </style>
 
 <script>
+  import { prepararColoreo, type Colorear } from '../../scripts/colorear';
+
   const ficha = document.querySelector<HTMLElement>('[data-ficha]')!;
   const selector = ficha.querySelector<HTMLElement>('[data-selector]')!;
   const nombre = ficha.dataset.nombre!;
@@ -270,14 +284,42 @@ let paso = 0;
   const fotos = [...ficha.querySelectorAll<HTMLImageElement>('img[data-foto]')];
   const miniaturas = [...ficha.querySelectorAll<HTMLButtonElement>('[data-miniatura]')];
   const etiquetaFoto = ficha.querySelector<HTMLElement>('[data-etiqueta-foto]')!;
+  const lienzo = ficha.querySelector<HTMLCanvasElement>('canvas[data-lienzo]');
 
-  function mostrarFoto(indice: number) {
-    fotos.forEach((f, i) => (f.hidden = i !== indice));
-    miniaturas.forEach((m, i) => (i === indice ? m.setAttribute('aria-current', 'true') : m.removeAttribute('aria-current')));
-    const { etiqueta: texto, hex } = fotos[indice].dataset;
+  // Foto que se pinta del color elegido (la primera, si tiene máscara)
+  let colorear: Promise<Colorear> | undefined;
+  /** Color con el que está pintada la foto, o undefined si se ve la original */
+  let pintada: { texto: string; hex: string } | undefined;
+
+  function mostrarEtiqueta(prefijo: string, texto: string | undefined, hex: string | undefined) {
     etiquetaFoto.hidden = !texto;
+    etiquetaFoto.querySelector<HTMLElement>('[data-etiqueta-prefijo]')!.textContent = prefijo;
     etiquetaFoto.querySelector<HTMLElement>('[data-etiqueta-texto]')!.textContent = texto ?? '';
     etiquetaFoto.querySelector<HTMLElement>('[data-etiqueta-hex]')!.style.background = hex ?? 'transparent';
+  }
+
+  function mostrarFoto(indice: number) {
+    const conColor = indice === 0 && !!lienzo && !!pintada;
+    fotos.forEach((f, i) => (f.hidden = i !== indice));
+    if (lienzo) lienzo.hidden = !conColor;
+    miniaturas.forEach((m, i) => (i === indice ? m.setAttribute('aria-current', 'true') : m.removeAttribute('aria-current')));
+    if (conColor) mostrarEtiqueta('Vista aproximada:', pintada!.texto, pintada!.hex);
+    else mostrarEtiqueta('En la foto:', fotos[indice].dataset.etiqueta, fotos[indice].dataset.hex);
+  }
+
+  async function pintar(tela: HTMLInputElement, color: HTMLInputElement) {
+    const base = fotos[0].dataset;
+    if (base.tela === tela.value && base.color === color.dataset.id) {
+      pintada = undefined;
+    } else {
+      colorear ??= prepararColoreo(lienzo!, lienzo!.dataset.fotoSrc!, lienzo!.dataset.mascaraSrc!, fotos[0].dataset.hex!);
+      const aplicar = await colorear;
+      // Si mientras cargaba se eligió otro color, ese manda
+      if (selector.querySelector(`input[name="color-${tela.value}"]:checked`) !== color || !tela.checked) return;
+      aplicar(color.dataset.hex!);
+      pintada = { texto: `${tela.dataset.nombre!.toLowerCase()} ${color.value.toLowerCase()}`, hex: color.dataset.hex! };
+    }
+    mostrarFoto(0);
   }
 
   miniaturas.forEach((m, i) => m.addEventListener('click', () => mostrarFoto(i)));
@@ -295,7 +337,9 @@ let paso = 0;
       if (ml) ml.href = opcion.dataset.ml!;
     }
 
-    if ((evento.target as HTMLInputElement).name !== 'opcion') {
+    if ((evento.target as HTMLInputElement).name !== 'opcion' && lienzo) {
+      pintar(tela, color).catch(() => {});
+    } else if ((evento.target as HTMLInputElement).name !== 'opcion') {
       const indice = fotos.findIndex((f) => f.dataset.tela === tela.value && f.dataset.color === color.dataset.id);
       if (indice >= 0) mostrarFoto(indice);
     }
@@ -309,4 +353,9 @@ let paso = 0;
   }
 
   selector.addEventListener('change', actualizar);
+  // Dejar la foto lista para pintar apenas cargue la página, así el primer cambio es instantáneo
+  if (lienzo) {
+    const preparar = () => (colorear ??= prepararColoreo(lienzo, lienzo.dataset.fotoSrc!, lienzo.dataset.mascaraSrc!, fotos[0].dataset.hex!));
+    'requestIdleCallback' in window ? requestIdleCallback(preparar) : setTimeout(preparar, 300);
+  }
 </script>
