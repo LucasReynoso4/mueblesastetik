@@ -35,8 +35,12 @@ export const USOS = [
 export type CategoriaId = (typeof CATEGORIAS)[number]['id'];
 export type UsoId = (typeof USOS)[number]['id'];
 
-/** Si la foto muestra un color del muestrario, al elegir ese color en la ficha se muestra esta foto */
-export type Foto = { imagen: ImageMetadata; tela?: string; color?: string };
+/**
+ * Si la foto muestra un color del muestrario, al elegir ese color en la ficha se muestra esta foto.
+ * Con `mascara` (PNG en blanco y negro, blanco = tela; se genera con scripts/mascara.py) la foto pasa a ser
+ * la principal de la ficha y se pinta del color que elija el cliente, sin cambiar de foto.
+ */
+export type Foto = { imagen: ImageMetadata; tela?: string; color?: string; mascara?: ImageMetadata };
 
 /** Una medida o versión del modelo, con su precio y su publicación de Mercado Libre */
 export type Opcion = { nombre: string; precio: number; mercadolibre: string };
@@ -91,7 +95,7 @@ export const PRODUCTOS: Producto[] = [
       { imagen: foto('respaldo-flor/05.webp'), tela: 'pana', color: 'negro' },
       { imagen: foto('respaldo-flor/06.webp'), tela: 'pana', color: 'rojo' },
       { imagen: foto('respaldo-flor/07.webp'), tela: 'pana', color: 'verde-esmeralda' },
-      { imagen: foto('respaldo-flor/08.webp'), tela: 'pana', color: 'violeta' },
+      { imagen: foto('respaldo-flor/08.webp'), tela: 'pana', color: 'violeta', mascara: foto('respaldo-flor/08-mascara.png') },
       { imagen: foto('respaldo-flor/09.webp'), tela: 'pana', color: 'amarillo' },
       { imagen: foto('respaldo-flor/10.webp'), tela: 'pana', color: 'lila' },
       { imagen: foto('respaldo-flor/11.webp'), tela: 'pana', color: 'naranja' },
@@ -240,7 +244,7 @@ export const PRODUCTOS: Producto[] = [
       { imagen: foto('puff-redondo/10.webp'), tela: 'pana', color: 'turquesa' },
       { imagen: foto('puff-redondo/11.webp'), tela: 'eco-cuero', color: 'verde-ingles' },
       { imagen: foto('puff-redondo/12.webp'), tela: 'eco-cuero', color: 'violeta' },
-      { imagen: foto('puff-redondo/13.webp') },
+      { imagen: foto('puff-redondo/13.webp'), tela: 'pana', color: 'fucsia', mascara: foto('puff-redondo/13-mascara.png') },
       { imagen: foto('puff-redondo/14.webp') },
     ],
   },
