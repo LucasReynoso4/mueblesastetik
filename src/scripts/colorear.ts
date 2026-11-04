@@ -1,8 +1,6 @@
 // Pinta la tela de una foto del color elegido, conservando luces, sombras y textura.
 // Usa la foto y su máscara (blanco = tela): por cada píxel de tela toma su luminosidad y le aplica
-// el tono del color nuevo (en espacio Lab, que separa luz de color).
-
-type Lab = [number, number, number];
+// el color nuevo (en luz lineal, como se comporta una tela real bajo la misma iluminación).
 
 const lineal = (c: number) => (c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4);
 const gamma = (c: number) => (c <= 0.0031308 ? 12.92 * c : 1.055 * c ** (1 / 2.4) - 0.055);
@@ -13,24 +11,6 @@ const fInv = (t: number) => (t ** 3 > 0.008856 ? t ** 3 : (t - 16 / 116) / 7.787
 function luz(r: number, g: number, b: number) {
   const y = 0.2126 * lineal(r / 255) + 0.7152 * lineal(g / 255) + 0.0722 * lineal(b / 255);
   return 116 * f(y) - 16;
-}
-
-function hexALab(hex: string): Lab {
-  const n = parseInt(hex.slice(1), 16);
-  const [r, g, b] = [(n >> 16) & 255, (n >> 8) & 255, n & 255].map((c) => lineal(c / 255));
-  const x = (0.4124 * r + 0.3576 * g + 0.1805 * b) / 0.95047;
-  const y = 0.2126 * r + 0.7152 * g + 0.0722 * b;
-  const z = (0.0193 * r + 0.1192 * g + 0.9505 * b) / 1.08883;
-  return [116 * f(y) - 16, 500 * (f(x) - f(y)), 200 * (f(y) - f(z))];
-}
-
-function labARgb([l, a, b]: Lab): [number, number, number] {
-  const fy = (l + 16) / 116;
-  const x = 0.95047 * fInv(fy + a / 500);
-  const y = fInv(fy);
-  const z = 1.08883 * fInv(fy - b / 200);
-  const rgb = [3.2406 * x - 1.5372 * y - 0.4986 * z, -0.9689 * x + 1.8758 * y + 0.0415 * z, 0.0557 * x - 0.204 * y + 1.057 * z];
-  return rgb.map((c) => Math.round(255 * Math.min(1, Math.max(0, gamma(c))))) as [number, number, number];
 }
 
 function cargar(src: string) {
@@ -45,8 +25,18 @@ function cargar(src: string) {
 
 export type Colorear = (hex: string) => void;
 
-/** Prepara el canvas con la foto y devuelve la función que la pinta de un color */
-export async function prepararColoreo(canvas: HTMLCanvasElement, srcFoto: string, srcMascara: string): Promise<Colorear> {
+const PESOS = [0.2126, 0.7152, 0.0722];
+const luminancia = (hex: string) => {
+  const n = parseInt(hex.slice(1), 16);
+  return [(n >> 16) & 255, (n >> 8) & 255, n & 255].reduce((s, c, i) => s + PESOS[i] * lineal(c / 255), 0);
+};
+
+/**
+ * Prepara el canvas con la foto y devuelve la función que la pinta de un color.
+ * `hexBase` es el color real de la tela en la foto: sirve para respetar la luz de la escena
+ * (en una foto con poca luz, un blanco se ve un poco más gris, como en la realidad).
+ */
+export async function prepararColoreo(canvas: HTMLCanvasElement, srcFoto: string, srcMascara: string, hexBase: string): Promise<Colorear> {
   const [foto, mascara] = await Promise.all([cargar(srcFoto), cargar(srcMascara)]);
   const ancho = foto.naturalWidth;
   const alto = foto.naturalHeight;
@@ -61,7 +51,7 @@ export async function prepararColoreo(canvas: HTMLCanvasElement, srcFoto: string
   const px = original.data;
   const total = ancho * alto;
 
-  // Luminosidad de cada píxel de tela (0-255) y la luminosidad típica de la tela
+  // Luminosidad de cada píxel de tela (L* de 0 a 255) y la luminosidad típica de la tela
   const luces = new Uint8Array(total);
   const alfa = new Uint8Array(total);
   const histograma = new Uint32Array(256);
@@ -80,27 +70,39 @@ export async function prepararColoreo(canvas: HTMLCanvasElement, srcFoto: string
     acumulado += histograma[l];
     if (acumulado >= mitad) { mediana = l; break; }
   }
-  const lRef = Math.max(mediana / 2.55, 5);
+  let p95 = 255;
+  acumulado = 0;
+  for (let l = 0; l < 256; l++) {
+    acumulado += histograma[l];
+    if (acumulado >= mitad * 1.9) { p95 = l; break; }
+  }
+  const yDe = (l: number) => fInv((l / 2.55 + 16) / 116);
+  // Los brillos fuertes se suavizan (si no, en colores intensos quedan manchas blancas)
+  const brillo = (k: number) => (k > 1 ? 1 + (k - 1) / k : k);
+  const yRef = Math.max(yDe(mediana), 0.002);
+  // Cuánta luz tiene la escena comparada con el color real (ajuste suave: en los colores intensos
+  // la foto siempre parece más oscura que la muestra, y eso no es falta de luz)
+  const exposicion = Math.min(1.1, Math.max(0.8, Math.sqrt(yRef / Math.max(luminancia(hexBase), 0.002))));
 
   const salida = ctx.createImageData(ancho, alto);
   const sal = salida.data;
 
   return (hex: string) => {
-    const [lt, at, bt] = hexALab(hex);
-    // Tabla: luminosidad original -> color nuevo. Debajo de la luz típica, las sombras escalan
-    // hacia el negro; encima, los brillos suben hacia el blanco (más suave en colores claros).
+    const n = parseInt(hex.slice(1), 16);
+    let destino = [(n >> 16) & 255, (n >> 8) & 255, n & 255].map((c) => lineal(c / 255) * exposicion);
+    // En colores claros, que las zonas más iluminadas no se quemen a blanco y se pierda la textura
+    const tope = Math.max(...destino) * brillo(yDe(p95) / yRef);
+    if (tope > 0.92) destino = destino.map((c) => (c * 0.92) / tope);
+    // Tabla: luminosidad original -> color nuevo. La tela nueva refleja la luz igual que la
+    // original: cada píxel es el color elegido multiplicado por cuánta luz recibe ese punto.
     const tabla = new Uint8Array(256 * 3);
     for (let l = 0; l < 256; l++) {
-      const lo = l / 2.55;
-      let ln: number;
-      if (lo <= lRef) ln = lt * (lo / lRef) ** 0.85;
-      else ln = lt + (100 - lt) * ((lo - lRef) / (100 - lRef)) * 0.75;
-      // En las sombras el color también pierde intensidad
-      const croma = Math.min(1, Math.max(0.35, ln / Math.max(lt, 1)));
-      const [r, g, b] = labARgb([ln, at * croma, bt * croma]);
-      tabla[l * 3] = r;
-      tabla[l * 3 + 1] = g;
-      tabla[l * 3 + 2] = b;
+      const k = brillo(yDe(l) / yRef);
+      let rgb = destino.map((c) => c * k);
+      const max = Math.max(...rgb);
+      // Los brillos que se pasan de blanco se aclaran de a poco en vez de quemarse
+      if (max > 1) rgb = rgb.map((c) => c / max + (1 - c / max) * Math.min(1, (max - 1) / max));
+      for (let c = 0; c < 3; c++) tabla[l * 3 + c] = Math.round(255 * Math.min(1, Math.max(0, gamma(rgb[c]))));
     }
     for (let i = 0, j = 0; i < total; i++, j += 4) {
       const a = alfa[i];

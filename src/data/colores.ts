@@ -24,7 +24,7 @@ export const TELAS: Tela[] = [
       { id: 'vizon', nombre: 'Vizón', hex: '#9a8c7b' },
       { id: 'rosa-claro', nombre: 'Rosa claro', hex: '#ecc3c3' },
       { id: 'rosa', nombre: 'Rosa', hex: '#e6a2b3' },
-      { id: 'rosa-viejo', nombre: 'Rosa viejo', hex: '#c38c97' },
+      { id: 'rosa-viejo', nombre: 'Rosa viejo', hex: '#c48e8f' },
       { id: 'fucsia', nombre: 'Fucsia', hex: '#d81f7d' },
       { id: 'rojo', nombre: 'Rojo', hex: '#c0182d' },
       { id: 'bordo', nombre: 'Bordó', hex: '#6c1427' },
